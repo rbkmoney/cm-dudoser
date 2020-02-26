@@ -1,11 +1,8 @@
 package com.rbkmoney.cm.hooker.listener;
 
-import com.rbkmoney.cm.hooker.domain.AssistantUploadData;
-import com.rbkmoney.cm.hooker.domain.ClaimData;
-import com.rbkmoney.cm.hooker.domain.UserType;
-import com.rbkmoney.cm.hooker.service.ClaimService;
+import com.rbkmoney.cm.hooker.domain.Mail;
+import com.rbkmoney.cm.hooker.service.MailService;
 import com.rbkmoney.cm.hooker.service.RetryService;
-import com.rbkmoney.cm.hooker.service.TemplateService;
 import com.rbkmoney.damsel.claim_management.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,53 +14,48 @@ import org.springframework.kafka.support.Acknowledgment;
 @RequiredArgsConstructor
 public class ClaimEventSinkListener {
 
-    private final ClaimService claimService;
-    private final TemplateService templateService;
+    private final MailService<ClaimStatusChanged> statusChangedMailService;
+    private final MailService<CommentModificationUnit> commentChangeMailService;
     private final RetryService retryService;
 
     @KafkaListener(topics = "${kafka.topics.claim-event-sink.id}", containerFactory = "kafkaListenerContainerFactory")
     public void handle(Event event, Acknowledgment ack) throws TException {
         Change change = event.getChange();
 
-        if (change.isSetStatusChanged()) {
-            ClaimStatusChanged claimStatusChanged = change.getStatusChanged();
+        if (event.getUserInfo() != null && isInternalUser(event)) {
+            if (change.isSetStatusChanged()) {
+                ClaimStatusChanged claimStatusChanged = change.getStatusChanged();
 
-            String partyId = claimStatusChanged.getPartyId();
-            long claimId = claimStatusChanged.getId();
+                String partyId = claimStatusChanged.getPartyId();
+                long claimId = claimStatusChanged.getId();
 
-            AssistantUploadData assistantData = claimService.getAssistantUploadData(partyId, claimId);
+                Mail mail = statusChangedMailService.buildMail(claimStatusChanged, partyId, claimId);
 
-            if (assistantData.getUserType() == UserType.internal_user) {
-                ClaimData claimData = claimService.getStatusChangeClaimData(claimId, claimStatusChanged);
+                retryService.repeatableSendMessage(mail);
+            } else if (change.isSetUpdated()
+                    && getUpdateLastModification(change).isSetClaimModification()
+                    && getUpdateLastModification(change).getClaimModification().isSetCommentModification()) {
+                ClaimUpdated claimUpdated = getUpdated(change);
 
-                buildTemplateAndUpload(claimData, assistantData);
-            }
-        } else if (change.isSetUpdated()
-                && getUpdateLastModification(change).isSetClaimModification()
-                && getUpdateLastModification(change).getClaimModification().isSetCommentModification()) {
-            ClaimUpdated claimUpdated = getUpdated(change);
-
-            String partyId = claimUpdated.getPartyId();
-            long claimId = claimUpdated.getId();
-
-            AssistantUploadData assistantData = claimService.getAssistantUploadData(partyId, claimId);
-
-            if (assistantData.getUserType() == UserType.internal_user) {
+                String partyId = claimUpdated.getPartyId();
+                long claimId = claimUpdated.getId();
                 CommentModificationUnit commentModification = getLastModification(claimUpdated).getClaimModification().getCommentModification();
 
-                ClaimData claimData = claimService.getCommentChangeClaimData(claimId, commentModification);
+                Mail mail = commentChangeMailService.buildMail(commentModification, partyId, claimId);
 
-                buildTemplateAndUpload(claimData, assistantData);
+                retryService.repeatableSendMessage(mail);
             }
         }
 
         ack.acknowledge();
     }
 
-    private void buildTemplateAndUpload(ClaimData claimData, AssistantUploadData assistantData) {
-        String templateData = templateService.process(claimData);
+    private boolean isInternalUser(Event event) {
+        return event.getUserInfo().getType().equals(internalUser());
+    }
 
-        retryService.repeatableUpload(assistantData, templateData);
+    private com.rbkmoney.damsel.claim_management.UserType internalUser() {
+        return com.rbkmoney.damsel.claim_management.UserType.internal_user(new InternalUser());
     }
 
     private ClaimUpdated getUpdated(Change change) {

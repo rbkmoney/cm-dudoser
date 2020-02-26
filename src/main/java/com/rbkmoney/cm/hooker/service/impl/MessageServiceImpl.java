@@ -22,7 +22,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Conversation getConversation(String conversationId) {
         try {
-            log.info("Trying to get conversation from thrift client, conversationId={}", conversationId);
+            log.info("Trying to get \"Conversation\" from thrift client, conversationId={}", conversationId);
 
             GetConversationResponse response = messageServiceClient.getConversations(List.of(conversationId), new ConversationFilter());
 
@@ -32,7 +32,7 @@ public class MessageServiceImpl implements MessageService {
 
             return response.getConversations().get(0);
         } catch (TException ex) {
-            log.error("Failed to get conversation from thrift client, conversationId={}", conversationId, ex);
+            log.error("Failed to get \"Conversation\" from thrift client, conversationId={}", conversationId, ex);
             throw new RuntimeException("Some problem with \"messageServiceClient\"", ex);
         }
     }

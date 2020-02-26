@@ -18,17 +18,17 @@ public class ClaimManagementServiceImpl implements ClaimManagementService {
     @Override
     public Claim getClaim(String partyId, Long claimId) {
         try {
-            log.info("Trying to get claim from thrift client, partyId={}, claimId={}", partyId, claimId);
+            log.info("Trying to get \"Claim\" from thrift client, partyId={}, claimId={}", partyId, claimId);
 
             Claim claim = claimManagementClient.getClaim(partyId, claimId);
 
             if (claim == null || claim.getChangeset() == null || claim.getChangeset().isEmpty()) {
-                throw new RuntimeException(String.format("Claim changeset can not be null, partyId=%s, claimId=%s", partyId, claimId));
+                throw new RuntimeException(String.format("Changeset from \"Claim\" can not be null, partyId=%s, claimId=%s", partyId, claimId));
             }
 
             return claim;
         } catch (TException ex) {
-            log.error("Failed to get claim from thrift client, partyId={}, claimId={}", partyId, claimId, ex);
+            log.error("Failed to get \"Claim\" from thrift client, partyId={}, claimId={}", partyId, claimId, ex);
             throw new RuntimeException("Some problem with \"claimManagementClient\"", ex);
         }
     }

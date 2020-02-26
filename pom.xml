@@ -46,7 +46,7 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.386-5519ffe</version>
+            <version>1.387-6a4cdd6</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney</groupId>
@@ -162,6 +162,12 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>kafka</artifactId>
             <version>1.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail</artifactId>
+            <version>1.5.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

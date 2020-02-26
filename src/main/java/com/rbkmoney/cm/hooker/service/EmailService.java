@@ -2,8 +2,8 @@ package com.rbkmoney.cm.hooker.service;
 
 import com.rbkmoney.cm.hooker.domain.Mail;
 
-public interface RetryService {
+public interface EmailService {
 
-    void repeatableSendMessage(Mail mail);
+    boolean sendMessage(Mail mail);
 
 }
