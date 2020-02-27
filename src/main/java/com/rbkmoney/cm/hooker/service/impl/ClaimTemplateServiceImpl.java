@@ -31,8 +31,8 @@ public class ClaimTemplateServiceImpl implements TemplateService {
         switch (data.getTemplateType()) {
             case STATUSCHANGE:
                 return claimManagementTemplateEngine.getTemplate("vm/StatusChangedEntity.vm");
-            case MODIFICATIONCHANGE:
-                return claimManagementTemplateEngine.getTemplate("vm/ModificationChangedEntity.vm");
+            case COMMENT:
+                return claimManagementTemplateEngine.getTemplate("vm/CommentChangedEntity.vm");
             default:
                 throw new NotFoundException("templateType not found");
         }

@@ -21,28 +21,33 @@ info:
   version: @project.version@
   stage: dev
 kafka:
-  bootstrap.servers: "localhost:29092"
+  bootstrap:
+    servers: "localhost:9092"
   topics:
     claim-event-sink:
       id: "claim-event-sink"
       enabled: false
-  client-id: claim-management
+  ssl:
+    enabled: false
+    trust-store-location: "test"
+    trust-store-password: "test"
+    key-store-location: "test"
+    key-store-password: "test"
+    key-password: "test"
+    key-store-type: PKCS12
+    trust-store-type: PKCS12
   consumer:
+    concurrency: 5
+    client-id: claim-management
     group-id: claim-management-group-1
     enable-auto-commit: false
-    auto-offset-reset: earliest
-    concurrency: 3
-    max-poll-records: 500
+    auto-offset-reset: latest
+    max-poll-records: 20
+    connections-max-idle-ms: 300000
+    session-timeout-ms: 300000
   error-handler:
     sleep-time-seconds: 5
     maxAttempts: -1
-  ssl:
-    enable: false
-    keystore-location:
-    keystore-password:
-    key-password:
-    server-password:
-    server-keystore-location:
 event:
   sink:
     retry:

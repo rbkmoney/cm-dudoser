@@ -3,6 +3,7 @@ package com.rbkmoney.cm.hooker.service.impl;
 import com.rbkmoney.cm.hooker.domain.ClaimData;
 import com.rbkmoney.cm.hooker.domain.Mail;
 import com.rbkmoney.cm.hooker.domain.MailDto;
+import com.rbkmoney.cm.hooker.domain.TemplateType;
 import com.rbkmoney.cm.hooker.exception.NotFoundException;
 import com.rbkmoney.cm.hooker.service.ClaimService;
 import com.rbkmoney.cm.hooker.service.MailService;
@@ -11,10 +12,12 @@ import com.rbkmoney.damsel.claim_management.ClaimStatus;
 import com.rbkmoney.damsel.claim_management.ClaimStatusChanged;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Qualifier("statusChangedMailService")
 @RequiredArgsConstructor
 @Slf4j
 public class StatusChangeMailServiceImpl implements MailService<ClaimStatusChanged> {
@@ -49,6 +52,7 @@ public class StatusChangeMailServiceImpl implements MailService<ClaimStatusChang
 
     private String getContent(ClaimStatusChanged claimStatusChanged, long claimId) {
         ClaimData claimData = ClaimData.builder()
+                .templateType(TemplateType.STATUSCHANGE)
                 .id(String.valueOf(claimId))
                 .status(convertStatus(claimStatusChanged.getStatus()))
                 .build();

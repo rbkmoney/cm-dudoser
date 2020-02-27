@@ -3,6 +3,7 @@ package com.rbkmoney.cm.hooker.service.impl;
 import com.rbkmoney.cm.hooker.domain.ClaimData;
 import com.rbkmoney.cm.hooker.domain.Mail;
 import com.rbkmoney.cm.hooker.domain.MailDto;
+import com.rbkmoney.cm.hooker.domain.TemplateType;
 import com.rbkmoney.cm.hooker.service.ClaimService;
 import com.rbkmoney.cm.hooker.service.MailService;
 import com.rbkmoney.cm.hooker.service.MessageService;
@@ -12,10 +13,12 @@ import com.rbkmoney.damsel.messages.Conversation;
 import com.rbkmoney.damsel.messages.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Qualifier("commentChangeMailService")
 @RequiredArgsConstructor
 @Slf4j
 public class CommentChangeMailServiceImpl implements MailService<CommentModificationUnit> {
@@ -55,6 +58,7 @@ public class CommentChangeMailServiceImpl implements MailService<CommentModifica
         Message message = conversation.getMessages().get(conversation.getMessages().size() - 1);
 
         ClaimData claimData = ClaimData.builder()
+                .templateType(TemplateType.COMMENT)
                 .id(String.valueOf(claimId))
                 .comment(message.getText())
                 .build();

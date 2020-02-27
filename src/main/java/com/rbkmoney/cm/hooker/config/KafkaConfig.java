@@ -4,6 +4,7 @@ import com.rbkmoney.cm.hooker.config.properties.KafkaConsumerProperties;
 import com.rbkmoney.cm.hooker.config.properties.KafkaSslProperties;
 import com.rbkmoney.cm.hooker.deserializer.ClaimEventSinkDeserializer;
 import com.rbkmoney.damsel.claim_management.Event;
+import com.rbkmoney.kafka.common.exception.handler.SeekToCurrentWithSleepErrorHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -22,7 +23,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ErrorHandler;
-import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
 
 import java.io.File;
 import java.util.HashMap;
@@ -36,6 +36,12 @@ public class KafkaConfig {
 
     @Value("${kafka.bootstrap.servers}")
     private String bootstrapServers;
+
+    @Value("${kafka.error-handler.sleep-time-seconds}")
+    private int errorHandlerSleepTimeSeconds;
+
+    @Value("${kafka.error-handler.maxAttempts}")
+    private int errorHandlerMaxAttempts;
 
     @Bean
     public Map<String, Object> consumerConfigs(KafkaSslProperties kafkaSslProperties,
@@ -88,6 +94,6 @@ public class KafkaConfig {
     }
 
     private ErrorHandler kafkaErrorHandler() {
-        return new SeekToCurrentErrorHandler(-1);
+        return new SeekToCurrentWithSleepErrorHandler(errorHandlerSleepTimeSeconds, errorHandlerMaxAttempts);
     }
 }
