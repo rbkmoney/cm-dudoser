@@ -3,8 +3,7 @@ package com.rbkmoney.cm.dudoser.service;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.rbkmoney.cm.dudoser.CMDudoserApplication;
-import com.rbkmoney.cm.dudoser.domain.Mail;
-import com.rbkmoney.cm.dudoser.domain.MailDto;
+import com.rbkmoney.cm.dudoser.domain.Message;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -17,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.mail.BodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -31,35 +29,34 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         "mail.username=username",
         "mail.password=secret",
 })
-public class SpringMailIntegrationTest {
+public class MailSenderTest {
 
     @Rule
     public SmtpServerRule smtpServerRule = new SmtpServerRule(2525);
 
     @Autowired
-    private EmailService emailService;
+    private MailSenderService emailService;
 
     @Test
     public void test() throws Exception {
-        Mail mail = Mail.builder()
+        Message message = Message.builder()
                 .from("no-reply@rbk.com")
                 .to("info@rbk.com")
                 .subject("Spring Mail Integration Testing with JUnit and GreenMail Example")
                 .content("We show how to write Integration Tests using Spring and GreenMail.")
-                .mailDto(MailDto.builder().partyId(UUID.randomUUID().toString()).claimId(1).build())
                 .build();
 
-        emailService.sendMessage(mail);
+        emailService.send(message);
 
         MimeMessage[] receivedMessages = smtpServerRule.getMessages();
 
         assertEquals(1, receivedMessages.length);
 
-        MimeMessage mailFromServer = receivedMessages[0];
+        MimeMessage receivedMessage = receivedMessages[0];
 
-        assertEquals(mail.getSubject(), mailFromServer.getSubject());
-        assertEquals(mail.getTo(), mailFromServer.getAllRecipients()[0].toString());
-        assertTrue(getTextFromMimeMultipart((MimeMultipart) mailFromServer.getContent()).contains(mail.getContent()));
+        assertEquals(message.getSubject(), receivedMessage.getSubject());
+        assertEquals(message.getTo(), receivedMessage.getAllRecipients()[0].toString());
+        assertTrue(getTextFromMimeMultipart((MimeMultipart) receivedMessage.getContent()).contains(message.getContent()));
     }
 
     private String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws Exception {

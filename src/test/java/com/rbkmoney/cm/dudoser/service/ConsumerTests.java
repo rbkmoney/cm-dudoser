@@ -1,7 +1,7 @@
 package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.config.AbstractKafkaConfig;
-import com.rbkmoney.cm.dudoser.domain.Mail;
+import com.rbkmoney.cm.dudoser.domain.Message;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +33,13 @@ public class ConsumerTests extends AbstractKafkaConfig {
     private String bootstrapServers;
 
     @MockBean
-    private RetryService retryService;
+    private MailSenderService mailSenderService;
 
     @MockBean
-    private MailService<ClaimStatusChanged> statusChangedMailService;
+    private MessageBuilderService<ClaimStatusChanged> statusMessageBuilder;
 
     @Test
-    public void paymentProcessingKafkaListenerTest() throws InterruptedException {
+    public void test() throws InterruptedException {
         ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
 
         Event event = new Event();
@@ -47,8 +47,8 @@ public class ConsumerTests extends AbstractKafkaConfig {
         event.setOccuredAt(LocalDateTime.now().toString());
         event.setChange(Change.status_changed(claimStatusChanged));
 
-        when(statusChangedMailService.buildMail(eq(claimStatusChanged), anyString(), anyLong())).thenReturn(Mail.builder().build());
-        doNothing().when(retryService).repeatableSendMessage(any());
+        when(statusMessageBuilder.build(eq(claimStatusChanged), anyString(), anyLong())).thenReturn(Message.builder().build());
+        when(mailSenderService.send(any())).thenReturn(true);
 
         try {
             DefaultKafkaProducerFactory<String, Event> producerFactory = createProducerFactory();
@@ -69,8 +69,8 @@ public class ConsumerTests extends AbstractKafkaConfig {
             ex.printStackTrace();
         }
 
-        verify(statusChangedMailService, times(1)).buildMail(eq(claimStatusChanged), anyString(), anyLong());
-        verify(retryService, times(1)).repeatableSendMessage(any());
+        verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), anyString(), anyLong());
+        verify(mailSenderService, times(1)).send(any());
     }
 
     private UserInfo getUserInfo() {

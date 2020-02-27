@@ -62,6 +62,9 @@ mail:
   password: ""
   from: no-reply@rbkmoney.com
   protocol: smtp
+  subject:
+    status: "Изменение статуса вашей заявки на подключение к RBK.money"
+    comment: "Добавлен новый комментарий по вашей заявки на подключение к RBK.money"
   smtp:
     auth: false
     timeout: 30000

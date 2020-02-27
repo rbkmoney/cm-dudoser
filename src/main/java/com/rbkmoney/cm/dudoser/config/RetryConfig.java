@@ -1,6 +1,6 @@
 package com.rbkmoney.cm.dudoser.config;
 
-import com.rbkmoney.cm.dudoser.exception.UploadException;
+import com.rbkmoney.cm.dudoser.exception.MailSendException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +25,7 @@ public class RetryConfig {
     public RetryTemplate retryTemplate() {
         RetryTemplate retryTemplate = new RetryTemplate();
         retryTemplate.setRetryPolicy(
-                new SimpleRetryPolicy(maxAttempts, Collections.singletonMap(UploadException.class, true))
+                new SimpleRetryPolicy(maxAttempts, Collections.singletonMap(MailSendException.class, true))
         );
         FixedBackOffPolicy policy = new FixedBackOffPolicy();
         policy.setBackOffPeriod(backOffPeriod);

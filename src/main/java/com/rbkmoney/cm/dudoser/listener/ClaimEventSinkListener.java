@@ -1,8 +1,6 @@
 package com.rbkmoney.cm.dudoser.listener;
 
-import com.rbkmoney.cm.dudoser.domain.Mail;
-import com.rbkmoney.cm.dudoser.service.MailService;
-import com.rbkmoney.cm.dudoser.service.RetryService;
+import com.rbkmoney.cm.dudoser.handler.ClaimHandler;
 import com.rbkmoney.damsel.claim_management.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,40 +12,37 @@ import org.springframework.kafka.support.Acknowledgment;
 @RequiredArgsConstructor
 public class ClaimEventSinkListener {
 
-    private final MailService<ClaimStatusChanged> statusChangedMailService;
-    private final MailService<CommentModificationUnit> commentChangeMailService;
-    private final RetryService retryService;
+    private final ClaimHandler claimHandler;
 
     @KafkaListener(topics = "${kafka.topics.claim-event-sink.id}", containerFactory = "kafkaListenerContainerFactory")
     public void handle(Event event, Acknowledgment ack) throws TException {
-        Change change = event.getChange();
+        eventLogging(event);
 
         if (event.getUserInfo() != null && isInternalUser(event)) {
-            if (change.isSetStatusChanged()) {
-                ClaimStatusChanged claimStatusChanged = change.getStatusChanged();
-
-                String partyId = claimStatusChanged.getPartyId();
-                long claimId = claimStatusChanged.getId();
-
-                Mail mail = statusChangedMailService.buildMail(claimStatusChanged, partyId, claimId);
-
-                retryService.repeatableSendMessage(mail);
-            } else if (change.isSetUpdated()
-                    && getUpdateLastModification(change).isSetClaimModification()
-                    && getUpdateLastModification(change).getClaimModification().isSetCommentModification()) {
-                ClaimUpdated claimUpdated = getUpdated(change);
-
-                String partyId = claimUpdated.getPartyId();
-                long claimId = claimUpdated.getId();
-                CommentModificationUnit commentModification = getLastModification(claimUpdated).getClaimModification().getCommentModification();
-
-                Mail mail = commentChangeMailService.buildMail(commentModification, partyId, claimId);
-
-                retryService.repeatableSendMessage(mail);
-            }
+            claimHandler.handle(event);
         }
 
         ack.acknowledge();
+    }
+
+    private void eventLogging(Event event) {
+        String recLogMessage = "status - %s, id - %s, party id - %s";
+        String message;
+        Change change = event.getChange();
+        if (change.isSetCreated()) {
+            ClaimCreated created = change.getCreated();
+            message = String.format(recLogMessage, "created", created.getId(), created.getPartyId());
+        } else if (change.isSetUpdated()) {
+            ClaimUpdated updated = change.getUpdated();
+            message = String.format(recLogMessage, "updated", updated.getId(), updated.getPartyId());
+        } else if (change.isSetStatusChanged()) {
+            ClaimStatusChanged statusChanged = change.getStatusChanged();
+            message = String.format(recLogMessage, "status changed", statusChanged.getId(), statusChanged.getPartyId());
+        } else {
+            message = "change type not found";
+        }
+
+        log.info("New record received from kafka ({})", message);
     }
 
     private boolean isInternalUser(Event event) {
@@ -56,17 +51,5 @@ public class ClaimEventSinkListener {
 
     private com.rbkmoney.damsel.claim_management.UserType internalUser() {
         return com.rbkmoney.damsel.claim_management.UserType.internal_user(new InternalUser());
-    }
-
-    private ClaimUpdated getUpdated(Change change) {
-        return change.getUpdated();
-    }
-
-    private Modification getUpdateLastModification(Change change) {
-        return getLastModification(getUpdated(change));
-    }
-
-    private Modification getLastModification(ClaimUpdated claimUpdated) {
-        return claimUpdated.getChangeset().get(claimUpdated.getChangeset().size() - 1);
     }
 }

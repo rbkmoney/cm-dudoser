@@ -1,10 +1,7 @@
 package com.rbkmoney.cm.dudoser.config;
 
+import com.rbkmoney.cm.dudoser.handler.ClaimHandler;
 import com.rbkmoney.cm.dudoser.listener.ClaimEventSinkListener;
-import com.rbkmoney.cm.dudoser.service.MailService;
-import com.rbkmoney.cm.dudoser.service.RetryService;
-import com.rbkmoney.damsel.claim_management.ClaimStatusChanged;
-import com.rbkmoney.damsel.claim_management.CommentModificationUnit;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +13,7 @@ public class KafkaConsumerBeanEnableConfig {
 
     @Bean
     @ConditionalOnProperty(value = "kafka.topics.claim-event-sink.enabled", havingValue = "true")
-    public ClaimEventSinkListener paymentEventsKafkaListener(MailService<ClaimStatusChanged> statusChangedMailService,
-                                                             MailService<CommentModificationUnit> commentChangeMailService,
-                                                             RetryService retryService) {
-        return new ClaimEventSinkListener(statusChangedMailService, commentChangeMailService, retryService);
+    public ClaimEventSinkListener paymentEventsKafkaListener(ClaimHandler claimHandler) {
+        return new ClaimEventSinkListener(claimHandler);
     }
 }

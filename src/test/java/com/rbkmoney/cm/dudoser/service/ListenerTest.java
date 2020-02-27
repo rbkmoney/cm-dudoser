@@ -1,6 +1,7 @@
 package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.CMDudoserApplication;
+import com.rbkmoney.cm.dudoser.handler.ClaimHandler;
 import com.rbkmoney.cm.dudoser.listener.ClaimEventSinkListener;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.damsel.messages.Conversation;
@@ -26,29 +27,26 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class ListenerTest {
 
     @MockBean
-    private RetryService retryService;
+    private MailSenderService mailSenderService;
 
     @MockBean
-    private ClaimManagementService claimManagementService;
+    private ClaimService claimService;
 
     @MockBean
-    private MessageService messageService;
+    private ConversationService conversationService;
 
     @Autowired
-    private MailService<ClaimStatusChanged> statusChangedMailService;
-
-    @Autowired
-    private MailService<CommentModificationUnit> commentChangeMailService;
+    private ClaimHandler claimHandler;
 
     private String email = "no-reply@rbk.com";
     private ClaimEventSinkListener listener;
 
     @Before
     public void setUp() throws Exception {
-        doNothing().when(retryService).repeatableSendMessage(any());
-        when(messageService.getConversation(anyString())).thenReturn(getConversation());
-        when(claimManagementService.getClaim(anyString(), anyLong())).thenReturn(getClaim(email));
-        listener = new ClaimEventSinkListener(statusChangedMailService, commentChangeMailService, retryService);
+        when(mailSenderService.send(any())).thenReturn(true);
+        when(conversationService.getConversation(anyString())).thenReturn(getConversation());
+        when(claimService.getEmailByClaim(anyString(), anyLong())).thenReturn(email);
+        listener = new ClaimEventSinkListener(claimHandler);
     }
 
     @Test
@@ -75,10 +73,10 @@ public class ListenerTest {
     }
 
     private void sendMail(ClaimEventSinkListener listener, Event event, int times) throws TException {
-        reset(retryService);
+        reset(mailSenderService);
         listener.handle(event, () -> {
         });
-        verify(retryService, times(times)).repeatableSendMessage(any());
+        verify(mailSenderService, times(times)).send(any());
     }
 
     private Event getEvent(UserType userType, Change change) {
