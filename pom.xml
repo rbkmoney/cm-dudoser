@@ -9,12 +9,12 @@
         <version>2.1.1.RELEASE</version>
     </parent>
 
-    <artifactId>cm-hooker</artifactId>
+    <artifactId>cm-dudoser</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>cm-hooker</name>
-    <description>claim-management-hooker</description>
+    <name>cm-dudoser</name>
+    <description>claim-management-dudoser</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

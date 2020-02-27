@@ -1,5 +1,5 @@
 #!groovy
-build('cm-hooker', 'java-maven') {
+build('cm-dudoser', 'java-maven') {
     checkoutRepo()
     loadBuildUtils()
 
