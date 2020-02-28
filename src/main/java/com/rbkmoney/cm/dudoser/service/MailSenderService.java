@@ -28,11 +28,9 @@ public class MailSenderService {
 
             mailSender.send(mimeMessage);
 
-            log.info("Mail message has been sent, partyId={}, claimId={}, email={}", message.getPartyId(), message.getClaimId(), message.getTo());
             return true;
         } catch (MessagingException | MailException ex) {
-            log.error("Received exception while sending mail message, partyId={}, claimId={}, email={}", message.getPartyId(), message.getClaimId(), message.getTo(), ex);
-            throw new MailSendException("Failed to send", ex);
+            throw new MailSendException(String.format("Received exception while sending mail message, partyId=%s, claimId=%s, email=%s", message.getPartyId(), message.getClaimId(), message.getTo()), ex);
         }
     }
 

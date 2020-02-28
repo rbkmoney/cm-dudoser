@@ -41,7 +41,6 @@ public class CommentChangeMessageBuilderServiceImpl implements MessageBuilderSer
     private String getContent(CommentModificationUnit commentModification, long claimId) {
         Conversation conversation = conversationService.getConversation(commentModification.getId());
 
-        //todo какие сообщения в листе
         com.rbkmoney.damsel.messages.Message message = conversation.getMessages().get(conversation.getMessages().size() - 1);
 
         ClaimData claimData = ClaimData.builder()

@@ -1,9 +1,6 @@
 package com.rbkmoney.cm.dudoser.handler;
 
 import com.rbkmoney.cm.dudoser.domain.Message;
-import com.rbkmoney.cm.dudoser.exception.MailSendException;
-import com.rbkmoney.cm.dudoser.exception.NotFoundException;
-import com.rbkmoney.cm.dudoser.exception.ThriftClientException;
 import com.rbkmoney.cm.dudoser.service.MailSenderService;
 import com.rbkmoney.cm.dudoser.service.MessageBuilderService;
 import com.rbkmoney.damsel.claim_management.*;
@@ -11,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -25,8 +25,6 @@ public class ClaimHandler {
     public void handle(Event event) {
         try {
             handleEvent(event);
-        } catch (NotFoundException | MailSendException | ThriftClientException ex) {
-            log.warn("Some problem when handle", ex);
         } catch (Exception ex) {
             log.error("Some problem when handle", ex);
             throw ex;
@@ -49,39 +47,42 @@ public class ClaimHandler {
             retryTemplate.execute(context -> mailSenderService.send(message));
 
             log.info("Handle status change event with party id '{}' and claim id '{}' finished", partyId, claimId);
-        } else if (isCommentModification(change)) {
+        } else if (containsCommentModifications(change)) {
             ClaimUpdated claimUpdated = change.getUpdated();
 
             String partyId = claimUpdated.getPartyId();
             long claimId = claimUpdated.getId();
-            CommentModificationUnit commentModification = getCommentModification(claimUpdated);
 
-            log.info("Handle comment modification update change event with id {} for party {} get started", claimId, partyId);
+            List<CommentModificationUnit> commentModifications = change.getUpdated().getChangeset().stream()
+                    .filter(Modification::isSetClaimModification)
+                    .map(Modification::getClaimModification)
+                    .filter(ClaimModification::isSetCommentModification)
+                    .map(ClaimModification::getCommentModification)
+                    .collect(Collectors.toList());
 
-            Message message = commentChangeMessageBuilder.build(commentModification, partyId, claimId);
+            for (CommentModificationUnit commentModification : commentModifications) {
+                log.info("Handle comment modification update change event with id {} for party {} get started", claimId, partyId);
 
-            retryTemplate.execute(context -> mailSenderService.send(message));
+                Message message = commentChangeMessageBuilder.build(commentModification, partyId, claimId);
 
-            log.info("Handle comment modification update change event with party id '{}' and claim id '{}' finished", partyId, claimId);
+                retryTemplate.execute(context -> mailSenderService.send(message));
+
+                log.info("Handle comment modification update change event with party id '{}' and claim id '{}' finished", partyId, claimId);
+            }
         }
     }
 
-    private boolean isCommentModification(Change change) {
+    private boolean containsCommentModifications(Change change) {
         if (change.isSetUpdated()) {
-            Modification modification = getLastModification(change.getUpdated());
-            return modification.isSetClaimModification()
-                    && modification.getClaimModification().isSetCommentModification();
+            return change.getUpdated().getChangeset().stream()
+                    .filter(Modification::isSetClaimModification)
+                    .map(Modification::getClaimModification)
+                    .filter(ClaimModification::isSetCommentModification)
+                    .map(claimModification -> true)
+                    .findFirst()
+                    .orElse(false);
         }
 
         return false;
-    }
-
-    private CommentModificationUnit getCommentModification(ClaimUpdated claimUpdated) {
-        return getLastModification(claimUpdated).getClaimModification().getCommentModification();
-    }
-
-    private Modification getLastModification(ClaimUpdated claimUpdated) {
-        //todo
-        return claimUpdated.getChangeset().get(claimUpdated.getChangeset().size() - 1);
     }
 }

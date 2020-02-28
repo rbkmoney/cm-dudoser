@@ -46,8 +46,7 @@ public class ClaimService {
 
             return claim;
         } catch (TException ex) {
-            log.error("Failed to get Claim from thrift client, partyId={}, claimId={}", partyId, claimId, ex);
-            throw new ThriftClientException("Some problem with claimManagementClient", ex);
+            throw new ThriftClientException(String.format("Failed to get Claim from thrift client, partyId=%s, claimId=%s", partyId, claimId), ex);
         }
     }
 

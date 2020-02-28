@@ -32,8 +32,7 @@ public class ConversationService {
 
             return response.getConversations().get(0);
         } catch (TException ex) {
-            log.error("Failed to get Conversation from thrift client, conversationId={}", conversationId, ex);
-            throw new ThriftClientException("Some problem with messageServiceClient", ex);
+            throw new ThriftClientException(String.format("Failed to get Conversation from thrift client, conversationId=%s", conversationId), ex);
         }
     }
 }
