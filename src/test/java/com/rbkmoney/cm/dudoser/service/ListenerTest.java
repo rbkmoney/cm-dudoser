@@ -51,7 +51,7 @@ public class ListenerTest {
 
     @Test
     public void testExternalUser() throws Exception {
-        //filtered
+        //если тип пользователя External, то сервис пропускает любой тип получаемого change
         sendMail(listener, getEvent(getExternalUser(), getClaimCreated()), 0);
         sendMail(listener, getEvent(getExternalUser(), getClaimStatus(getClaimPending())), 0);
         sendMail(listener, getEvent(getExternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))), 0);
@@ -59,14 +59,14 @@ public class ListenerTest {
 
     @Test
     public void testInternalUser() throws Exception {
-        //filtered
+        //change типа created пропускается
         sendMail(listener, getEvent(getInternalUser(), getClaimCreated()), 0);
 
         sendMail(listener, getEvent(getInternalUser(), getClaimStatus(getClaimAccepted())), 1);
         sendMail(listener, getEvent(getInternalUser(), getClaimStatus(getClaimDenied())), 1);
         sendMail(listener, getEvent(getInternalUser(), getClaimStatus(getClaimPending())), 1);
 
-        // filtered
+        //modification типа НЕ comment пропускается
         sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getNotCommentModification()))), 0);
 
         sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))), 1);

@@ -72,6 +72,7 @@ public class ConsumerTests extends AbstractKafkaConfig {
         }
 
         verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), anyString(), anyLong());
+        // проверяем что ивент из кафки был корректно отправлен сообщением на почтовый сервер
         verify(retryableSenderService, times(1)).sendToMail(any());
     }
 
@@ -87,6 +88,7 @@ public class ConsumerTests extends AbstractKafkaConfig {
         event.setChange(Change.status_changed(claimStatusChanged));
 
         when(statusMessageBuilder.build(eq(claimStatusChanged), anyString(), anyLong())).thenReturn(Message.builder().build());
+        // на countRetries попытке мок корректно обработает вызов, в предыдущих попытках будет вынуждать кафку ретраить обработку ивента
         doAnswer(
                 invocation -> {
                     int increment = atomicInt.getAndIncrement();
@@ -117,6 +119,7 @@ public class ConsumerTests extends AbstractKafkaConfig {
         }
 
         verify(statusMessageBuilder, times(countRetries)).build(eq(claimStatusChanged), anyString(), anyLong());
+        // проверяем, что кафка пыталась обработать ивент такое количество раз, которое задано моку
         verify(retryableSenderService, times(countRetries)).sendToMail(any());
     }
 

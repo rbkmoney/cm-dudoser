@@ -33,6 +33,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 })
 public class MailSenderTest {
 
+    // отправляем сообщение на фейковый почтовой сервер
     @Rule
     public SmtpServerRule smtpServerRule = new SmtpServerRule(2525);
 
