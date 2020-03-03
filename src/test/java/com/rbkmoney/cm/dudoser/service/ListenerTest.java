@@ -27,7 +27,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class ListenerTest {
 
     @MockBean
-    private MailSenderService mailSenderService;
+    private RetryableSenderService retryableSenderService;
 
     @MockBean
     private ClaimService claimService;
@@ -42,8 +42,8 @@ public class ListenerTest {
     private ClaimEventSinkListener listener;
 
     @Before
-    public void setUp() throws Exception {
-        when(mailSenderService.send(any())).thenReturn(true);
+    public void setUp() {
+        doNothing().when(retryableSenderService).sendToMail(any());
         when(conversationService.getConversation(anyString())).thenReturn(getConversation());
         when(claimService.getEmailByClaim(anyString(), anyLong())).thenReturn(email);
         listener = new ClaimEventSinkListener(claimHandler);
@@ -70,13 +70,21 @@ public class ListenerTest {
         sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getNotCommentModification()))), 0);
 
         sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))), 1);
+
+        Change claimUpdated = getClaimUpdated(
+                getClaimModification(getCommentModification()),
+                getClaimModification(getNotCommentModification()),
+                getClaimModification(getCommentModification())
+        );
+
+        sendMail(listener, getEvent(getInternalUser(), claimUpdated), 2);
     }
 
-    private void sendMail(ClaimEventSinkListener listener, Event event, int times) throws TException {
-        reset(mailSenderService);
+    private void sendMail(ClaimEventSinkListener listener, Event event, int timesSending) throws TException {
+        reset(retryableSenderService);
         listener.handle(event, () -> {
         });
-        verify(mailSenderService, times(times)).send(any());
+        verify(retryableSenderService, times(timesSending)).sendToMail(any());
     }
 
     private Event getEvent(UserType userType, Change change) {
@@ -92,9 +100,9 @@ public class ListenerTest {
         return Change.created(changed);
     }
 
-    private Change getClaimUpdated(Modification modification) {
+    private Change getClaimUpdated(Modification... modifications) {
         ClaimUpdated changed = random(ClaimUpdated.class, "changeset");
-        changed.setChangeset(List.of(modification));
+        changed.setChangeset(List.of(modifications));
         return Change.updated(changed);
     }
 

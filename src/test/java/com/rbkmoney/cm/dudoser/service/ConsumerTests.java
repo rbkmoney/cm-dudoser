@@ -2,6 +2,7 @@ package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.config.AbstractKafkaConfig;
 import com.rbkmoney.cm.dudoser.domain.Message;
+import com.rbkmoney.cm.dudoser.exception.MailSendException;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.benas.randombeans.api.EnhancedRandom.random;
 import static org.mockito.Mockito.*;
@@ -33,13 +35,13 @@ public class ConsumerTests extends AbstractKafkaConfig {
     private String bootstrapServers;
 
     @MockBean
-    private MailSenderService mailSenderService;
+    private RetryableSenderService retryableSenderService;
 
     @MockBean
     private MessageBuilderService<ClaimStatusChanged> statusMessageBuilder;
 
     @Test
-    public void test() throws InterruptedException {
+    public void correctFlowTest() {
         ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
 
         Event event = new Event();
@@ -48,7 +50,7 @@ public class ConsumerTests extends AbstractKafkaConfig {
         event.setChange(Change.status_changed(claimStatusChanged));
 
         when(statusMessageBuilder.build(eq(claimStatusChanged), anyString(), anyLong())).thenReturn(Message.builder().build());
-        when(mailSenderService.send(any())).thenReturn(true);
+        doNothing().when(retryableSenderService).sendToMail(any());
 
         try {
             DefaultKafkaProducerFactory<String, Event> producerFactory = createProducerFactory();
@@ -70,7 +72,52 @@ public class ConsumerTests extends AbstractKafkaConfig {
         }
 
         verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), anyString(), anyLong());
-        verify(mailSenderService, times(1)).send(any());
+        verify(retryableSenderService, times(1)).sendToMail(any());
+    }
+
+    @Test
+    public void errorRetryTest() {
+        int countRetries = 5;
+        AtomicInteger atomicInt = new AtomicInteger(0);
+        ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
+
+        Event event = new Event();
+        event.setUserInfo(getUserInfo());
+        event.setOccuredAt(LocalDateTime.now().toString());
+        event.setChange(Change.status_changed(claimStatusChanged));
+
+        when(statusMessageBuilder.build(eq(claimStatusChanged), anyString(), anyLong())).thenReturn(Message.builder().build());
+        doAnswer(
+                invocation -> {
+                    int increment = atomicInt.getAndIncrement();
+                    if (increment < countRetries - 1) {
+                        throw new MailSendException();
+                    }
+                    return true;
+                }
+        ).when(retryableSenderService).sendToMail(any());
+
+        try {
+            DefaultKafkaProducerFactory<String, Event> producerFactory = createProducerFactory();
+
+            KafkaTemplate<String, Event> kafkaTemplate = new KafkaTemplate<>(producerFactory);
+
+            TimeUnit.SECONDS.sleep(1);
+
+            kafkaTemplate.send(
+                    topic,
+                    random(String.class),
+                    event
+            )
+                    .get();
+
+            TimeUnit.SECONDS.sleep(6);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        verify(statusMessageBuilder, times(countRetries)).build(eq(claimStatusChanged), anyString(), anyLong());
+        verify(retryableSenderService, times(countRetries)).sendToMail(any());
     }
 
     private UserInfo getUserInfo() {

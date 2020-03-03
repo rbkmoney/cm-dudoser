@@ -66,6 +66,7 @@ public abstract class AbstractKafkaConfig extends AbstractTestUtils {
     private static Consumer<EnvironmentProperties> getEnvironmentPropertiesConsumer() {
         return environmentProperties -> {
             environmentProperties.put("kafka.topics.claim-event-sink.enabled", "true");
+            environmentProperties.put("kafka.error-handler.sleep-time-seconds", "1");
             testContainers.getKafkaTestContainer().ifPresent(
                     c -> environmentProperties.put("kafka.bootstrap.servers", c.getBootstrapServers())
             );

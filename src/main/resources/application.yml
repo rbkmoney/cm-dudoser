@@ -48,13 +48,6 @@ kafka:
   error-handler:
     sleep-time-seconds: 5
     maxAttempts: -1
-event:
-  sink:
-    retry:
-      max:
-        attempts: 3
-      backoff:
-        period: 1000
 mail:
   host: mr1.linode.rbkmoney.net
   port: 25
@@ -62,6 +55,11 @@ mail:
   password: ""
   from: no-reply@rbkmoney.com
   protocol: smtp
+  retry:
+    max:
+      attempts: 3
+    backoff:
+      period: 1000
   subject:
     status: "Изменение статуса вашей заявки на подключение к RBK.money"
     comment: "Добавлен новый комментарий по вашей заявки на подключение к RBK.money"

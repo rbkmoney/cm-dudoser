@@ -4,12 +4,14 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.rbkmoney.cm.dudoser.CMDudoserApplication;
 import com.rbkmoney.cm.dudoser.domain.Message;
+import com.rbkmoney.cm.dudoser.exception.MailSendException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -35,18 +37,13 @@ public class MailSenderTest {
     public SmtpServerRule smtpServerRule = new SmtpServerRule(2525);
 
     @Autowired
-    private MailSenderService emailService;
+    private MailSenderService mailSenderService;
 
     @Test
-    public void test() throws Exception {
-        Message message = Message.builder()
-                .from("no-reply@rbk.com")
-                .to("info@rbk.com")
-                .subject("Spring Mail Integration Testing with JUnit and GreenMail Example")
-                .content("We show how to write Integration Tests using Spring and GreenMail.")
-                .build();
+    public void sendingMessageFlowTest() throws Exception {
+        Message message = createMessage();
 
-        emailService.send(message);
+        mailSenderService.send(message);
 
         MimeMessage[] receivedMessages = smtpServerRule.getMessages();
 
@@ -57,6 +54,24 @@ public class MailSenderTest {
         assertEquals(message.getSubject(), receivedMessage.getSubject());
         assertEquals(message.getTo(), receivedMessage.getAllRecipients()[0].toString());
         assertTrue(getTextFromMimeMultipart((MimeMultipart) receivedMessage.getContent()).contains(message.getContent()));
+    }
+
+    @Test(expected = MailSendException.class)
+    public void incorrectAddressTest() {
+        Message message = createMessage();
+        message.setTo("asd, asd");
+
+        mailSenderService.send(message);
+    }
+
+    @Test(expected = MailSendException.class)
+    public void connectionRefusedTest() {
+        JavaMailSenderImpl sender = getJavaMailSender(2524);
+
+        Message message = createMessage();
+
+        MailSenderService senderService = new MailSenderService(sender);
+        senderService.send(message);
     }
 
     private String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws Exception {
@@ -76,6 +91,24 @@ public class MailSenderTest {
             }
         }
         return result;
+    }
+
+    private Message createMessage() {
+        return Message.builder()
+                .from("no-reply@rbk.com")
+                .to("info@rbk.com")
+                .subject("Spring Mail Integration Testing with JUnit and GreenMail Example")
+                .content("We show how to write Integration Tests using Spring and GreenMail.")
+                .build();
+    }
+
+    private JavaMailSenderImpl getJavaMailSender(int port) {
+        JavaMailSenderImpl sender = new JavaMailSenderImpl();
+        sender.setHost("localhost");
+        sender.setPort(port);
+        sender.setUsername("username");
+        sender.setPassword("secret");
+        return sender;
     }
 
     public static class SmtpServerRule extends ExternalResource {

@@ -15,22 +15,22 @@ import java.util.Collections;
 @Configuration
 public class RetryConfig {
 
-    @Value("${event.sink.retry.backoff.period:1000}")
+    @Value("${mail.retry.backoff.period:1000}")
     private long backOffPeriod;
 
-    @Value("${event.sink.retry.max.attempts:3}")
+    @Value("${mail.retry.max.attempts:3}")
     private int maxAttempts;
 
     @Bean
-    public RetryTemplate retryTemplate() {
+    public RetryTemplate mailRetryTemplate() {
+        FixedBackOffPolicy policy = new FixedBackOffPolicy();
+        policy.setBackOffPeriod(backOffPeriod);
+
         RetryTemplate retryTemplate = new RetryTemplate();
         retryTemplate.setRetryPolicy(
                 new SimpleRetryPolicy(maxAttempts, Collections.singletonMap(MailSendException.class, true))
         );
-        FixedBackOffPolicy policy = new FixedBackOffPolicy();
-        policy.setBackOffPeriod(backOffPeriod);
         retryTemplate.setBackOffPolicy(policy);
-
         return retryTemplate;
     }
 }
