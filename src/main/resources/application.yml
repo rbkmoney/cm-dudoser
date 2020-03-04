@@ -1,0 +1,80 @@
+server:
+  port: @server.port@
+management:
+  security:
+    flag: false
+  metrics:
+    export:
+      statsd:
+        flavor: ETSY
+        enabled: false
+  endpoint:
+    health:
+      show-details: ALWAYS
+spring:
+  application:
+    name: @project.name@
+  output:
+    ansi:
+      enabled: ALWAYS
+info:
+  version: @project.version@
+  stage: dev
+kafka:
+  bootstrap:
+    servers: "localhost:9092"
+  topics:
+    claim-event-sink:
+      id: "claim-event-sink"
+      enabled: false
+  ssl:
+    enabled: false
+    trust-store-location: "test"
+    trust-store-password: "test"
+    key-store-location: "test"
+    key-store-password: "test"
+    key-password: "test"
+    key-store-type: PKCS12
+    trust-store-type: PKCS12
+  consumer:
+    concurrency: 5
+    client-id: claim-management
+    group-id: claim-management-group-1
+    enable-auto-commit: false
+    auto-offset-reset: latest
+    max-poll-records: 20
+    connections-max-idle-ms: 300000
+    session-timeout-ms: 300000
+  error-handler:
+    sleep-time-seconds: 5
+    maxAttempts: -1
+mail:
+  host: mr1.linode.rbkmoney.net
+  port: 25
+  username: ""
+  password: ""
+  from: no-reply@rbkmoney.com
+  protocol: smtp
+  retry:
+    max:
+      attempts: 3
+    backoff:
+      period: 1000
+  subject:
+    status: "Изменение статуса вашей заявки на подключение к RBK.money"
+    comment: "Добавлен новый комментарий по вашей заявки на подключение к RBK.money"
+  smtp:
+    auth: false
+    timeout: 30000
+    starttls:
+      enable: true
+claimmanagement:
+  client:
+    adapter:
+      url: http://localhost:8022/v1/claimmanagement
+      networkTimeout: 30000
+conversations:
+  client:
+    adapter:
+      url: http://localhost:8022/v1/conversations
+      networkTimeout: 30000
