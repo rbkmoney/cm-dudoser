@@ -13,12 +13,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Qualifier("commentChangeMessageBuilder")
-public class CommentChangeMessageBuilderServiceImpl extends AbstractMessageBuilderServiceImpl<CommentModificationUnit> {
+public class CommentChangeMessageBuilderServiceImpl extends AbstractMessageBuilderService<CommentModificationUnit> {
 
     private final ConversationService conversationService;
     private final TemplateService templateService;
 
-    public CommentChangeMessageBuilderServiceImpl(ClaimService claimService, @Value("${mail.from}") String emailFrom, @Value("${mail.subject.comment}") String subject, ConversationService conversationService, TemplateService templateService) {
+    public CommentChangeMessageBuilderServiceImpl(ClaimService claimService,
+                                                  @Value("${mail.from}") String emailFrom,
+                                                  @Value("${mail.subject.comment}") String subject,
+                                                  ConversationService conversationService,
+                                                  TemplateService templateService) {
         super(claimService, emailFrom, subject);
         this.conversationService = conversationService;
         this.templateService = templateService;

@@ -14,11 +14,14 @@ import static com.rbkmoney.cm.dudoser.domain.ClaimStatus.valueOf;
 
 @Service
 @Qualifier("statusMessageBuilder")
-public class StatusChangeMessageBuilderServiceImpl extends AbstractMessageBuilderServiceImpl<ClaimStatusChanged> {
+public class StatusChangeMessageBuilderServiceImpl extends AbstractMessageBuilderService<ClaimStatusChanged> {
 
     private final TemplateService templateService;
 
-    public StatusChangeMessageBuilderServiceImpl(ClaimService claimService, @Value("${mail.from}") String emailFrom, @Value("${mail.subject.comment}") String subject, TemplateService templateService) {
+    public StatusChangeMessageBuilderServiceImpl(ClaimService claimService,
+                                                 @Value("${mail.from}") String emailFrom,
+                                                 @Value("${mail.subject.comment}") String subject,
+                                                 TemplateService templateService) {
         super(claimService, emailFrom, subject);
         this.templateService = templateService;
     }

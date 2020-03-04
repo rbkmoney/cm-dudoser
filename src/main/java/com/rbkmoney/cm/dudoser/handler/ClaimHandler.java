@@ -59,13 +59,13 @@ public class ClaimHandler {
                     .collect(Collectors.toList());
 
             for (CommentModificationUnit commentModification : commentModifications) {
-                log.info("Handle comment modification update change event with id {} for party {} get started", claimId, partyId);
+                log.info("Handle comment modification update change event  get started, claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
 
                 Message message = commentChangeMessageBuilder.build(commentModification, partyId, claimId);
 
                 retryableSenderService.sendToMail(message);
 
-                log.info("Handle comment modification update change event with party id '{}' and claim id '{}' finished", partyId, claimId);
+                log.info("Handle comment modification update change event finished, claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
             }
         }
     }

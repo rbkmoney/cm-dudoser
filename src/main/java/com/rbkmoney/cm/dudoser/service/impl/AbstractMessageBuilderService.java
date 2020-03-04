@@ -6,7 +6,7 @@ import com.rbkmoney.cm.dudoser.service.MessageBuilderService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public abstract class AbstractMessageBuilderServiceImpl<T> implements MessageBuilderService<T> {
+public abstract class AbstractMessageBuilderService<T> implements MessageBuilderService<T> {
 
     private final ClaimService claimService;
     private final String emailFrom;

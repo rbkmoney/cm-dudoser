@@ -23,7 +23,7 @@ public class ClaimEventSinkListener {
             claimHandler.handle(event);
         }
 
-        log.info("Handle claim management Event fished, occuredAt={}", event.getOccuredAt());
+        log.info("Handle claim management Event finished, occuredAt={}", event.getOccuredAt());
 
         ack.acknowledge();
     }
