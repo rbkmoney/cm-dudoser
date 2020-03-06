@@ -38,13 +38,13 @@ public class ClaimHandler {
             String partyId = claimStatusChanged.getPartyId();
             long claimId = claimStatusChanged.getId();
 
-            log.info("Handle status change event with id {} for party {} get started", claimId, partyId);
+            log.info("Handle status change event get started, claimId={}, partyId={}", claimId, partyId);
 
             Message message = statusMessageBuilder.build(claimStatusChanged, partyId, claimId);
 
             retryableSenderService.sendToMail(message);
 
-            log.info("Handle status change event with party id '{}' and claim id '{}' finished", partyId, claimId);
+            log.info("Handle status change event finished, claimId={}, partyId={}", partyId, claimId);
         } else if (containsCommentModifications(change)) {
             ClaimUpdated claimUpdated = change.getUpdated();
 
@@ -59,7 +59,7 @@ public class ClaimHandler {
                     .collect(Collectors.toList());
 
             for (CommentModificationUnit commentModification : commentModifications) {
-                log.info("Handle comment modification update change event  get started, claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
+                log.info("Handle comment modification update change event get started, claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
 
                 Message message = commentChangeMessageBuilder.build(commentModification, partyId, claimId);
 

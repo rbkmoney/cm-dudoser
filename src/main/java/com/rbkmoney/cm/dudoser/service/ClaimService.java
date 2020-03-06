@@ -54,11 +54,7 @@ public class ClaimService {
         return Optional.ofNullable(modificationUnit)
                 .map(ModificationUnit::getUserInfo)
                 .map(UserInfo::getType)
-                .map(userType -> userType.equals(externalUser()))
+                .map(UserType::isSetExternalUser)
                 .orElse(false);
-    }
-
-    private com.rbkmoney.damsel.claim_management.UserType externalUser() {
-        return com.rbkmoney.damsel.claim_management.UserType.external_user(new ExternalUser());
     }
 }

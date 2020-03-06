@@ -2,7 +2,6 @@ package com.rbkmoney.cm.dudoser.listener;
 
 import com.rbkmoney.cm.dudoser.handler.ClaimHandler;
 import com.rbkmoney.damsel.claim_management.Event;
-import com.rbkmoney.damsel.claim_management.InternalUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -17,22 +16,14 @@ public class ClaimEventSinkListener {
 
     @KafkaListener(topics = "${kafka.topics.claim-event-sink.id}", containerFactory = "kafkaListenerContainerFactory")
     public void handle(Event event, Acknowledgment ack) throws TException {
-        log.info("Handle claim management Event get started, occuredAt={}", event.getOccuredAt());
+        log.info("Handle claim management Event get started, event={}", event);
 
-        if (event.getUserInfo() != null && isInternalUser(event)) {
+        if (event.getUserInfo() != null && event.getUserInfo().getType().isSetInternalUser()) {
             claimHandler.handle(event);
         }
 
-        log.info("Handle claim management Event finished, occuredAt={}", event.getOccuredAt());
+        log.info("Handle claim management Event finished, event={}", event);
 
         ack.acknowledge();
-    }
-
-    private boolean isInternalUser(Event event) {
-        return event.getUserInfo().getType().equals(internalUser());
-    }
-
-    private com.rbkmoney.damsel.claim_management.UserType internalUser() {
-        return com.rbkmoney.damsel.claim_management.UserType.internal_user(new InternalUser());
     }
 }
