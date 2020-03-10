@@ -20,6 +20,8 @@ public class ClaimEventSinkListener {
 
         if (event.getUserInfo() != null && event.getUserInfo().getType().isSetInternalUser()) {
             claimHandler.handle(event);
+        } else {
+            log.info("Filtered external claim management Event, event={}", event);
         }
 
         log.info("Handle claim management Event finished, event={}", event);
