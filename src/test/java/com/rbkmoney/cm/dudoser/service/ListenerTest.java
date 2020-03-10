@@ -45,7 +45,7 @@ public class ListenerTest {
     public void setUp() {
         doNothing().when(retryableSenderService).sendToMail(any());
         when(conversationService.getConversation(anyString())).thenReturn(getConversation());
-        when(claimService.getEmailByClaim(anyString(), anyLong())).thenReturn(email);
+        when(claimService.getEmailByClaim(any(), anyString(), anyLong())).thenReturn(email);
         listener = new ClaimEventSinkListener(claimHandler);
     }
 
