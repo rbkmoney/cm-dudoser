@@ -40,7 +40,7 @@ public class ClaimHandler {
 
             log.info("Handle status change event get started, claimId={}, partyId={}", claimId, partyId);
 
-            Message message = statusMessageBuilder.build(claimStatusChanged, partyId, claimId);
+            Message message = statusMessageBuilder.build(claimStatusChanged, event.getUserInfo(), partyId, claimId);
 
             retryableSenderService.sendToMail(message);
 
@@ -61,7 +61,7 @@ public class ClaimHandler {
             for (CommentModificationUnit commentModification : commentModifications) {
                 log.info("Handle comment modification update change event get started, claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
 
-                Message message = commentChangeMessageBuilder.build(commentModification, partyId, claimId);
+                Message message = commentChangeMessageBuilder.build(commentModification, event.getUserInfo(), partyId, claimId);
 
                 retryableSenderService.sendToMail(message);
 
