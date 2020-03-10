@@ -9,18 +9,13 @@ public class TemplateConfig {
 
     @Bean
     public VelocityEngine claimManagementTemplateEngine() {
-        String resourceLoader = "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader";
-
-        VelocityEngine engine = getVelocityEngine(resourceLoader);
-
-        engine.init();
-        return engine;
-    }
-
-    private VelocityEngine getVelocityEngine(String resourceLoader) {
         VelocityEngine engine = new VelocityEngine();
         engine.setProperty("resource.loader", "class");
-        engine.setProperty("class.resource.loader.class", resourceLoader);
+        engine.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        engine.setProperty("input.encoding", "UTF-8");
+        engine.setProperty("output.encoding", "UTF-8");
+
+        engine.init();
         return engine;
     }
 }
