@@ -2,10 +2,7 @@ package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.exception.NotFoundException;
 import com.rbkmoney.cm.dudoser.exception.ThriftClientException;
-import com.rbkmoney.cm.dudoser.meta.UserIdentityEmailExtensionKit;
-import com.rbkmoney.cm.dudoser.meta.UserIdentityIdExtensionKit;
-import com.rbkmoney.cm.dudoser.meta.UserIdentityRealmExtensionKit;
-import com.rbkmoney.cm.dudoser.meta.UserIdentityUsernameExtensionKit;
+import com.rbkmoney.cm.dudoser.meta.*;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.woody.api.flow.WFlow;
 import com.rbkmoney.woody.api.trace.ContextUtils;
@@ -49,7 +46,7 @@ public class ClaimService {
                         ContextUtils.setCustomMetadataValue(UserIdentityIdExtensionKit.KEY, userInfo.getId());
                         ContextUtils.setCustomMetadataValue(UserIdentityEmailExtensionKit.KEY, userInfo.getEmail());
                         ContextUtils.setCustomMetadataValue(UserIdentityUsernameExtensionKit.KEY, userInfo.getUsername());
-                        ContextUtils.setCustomMetadataValue(UserIdentityRealmExtensionKit.KEY, userInfo.getType());
+                        ContextUtils.setCustomMetadataValue(UserIdentityRealmExtensionKit.KEY, getType(userInfo));
                         return claimManagementClient.getClaim(partyId, claimId);
                     }
             ).call();
@@ -64,6 +61,16 @@ public class ClaimService {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private UserTypeEnum getType(UserInfo userInfo) {
+        if (userInfo.getType().isSetInternalUser()) {
+            return UserTypeEnum.internal;
+        }
+        if (userInfo.getType().isSetExternalUser()) {
+            return UserTypeEnum.external;
+        }
+        throw new IllegalArgumentException();
     }
 
     private boolean isExternalUser(ModificationUnit modificationUnit) {
