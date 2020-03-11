@@ -20,10 +20,9 @@ public class CommentChangeMessageBuilderServiceImpl extends AbstractMessageBuild
 
     public CommentChangeMessageBuilderServiceImpl(ClaimService claimService,
                                                   @Value("${mail.from}") String emailFrom,
-                                                  @Value("${mail.subject.comment}") String subject,
                                                   ConversationService conversationService,
                                                   TemplateService templateService) {
-        super(claimService, emailFrom, subject);
+        super(claimService, emailFrom, "Добавлен новый комментарий по вашей заявке на подключение к RBK.money");
         this.conversationService = conversationService;
         this.templateService = templateService;
     }
