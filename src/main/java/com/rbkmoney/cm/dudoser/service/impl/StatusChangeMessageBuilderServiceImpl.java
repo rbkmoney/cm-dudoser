@@ -20,8 +20,9 @@ public class StatusChangeMessageBuilderServiceImpl extends AbstractMessageBuilde
 
     public StatusChangeMessageBuilderServiceImpl(ClaimService claimService,
                                                  @Value("${mail.from}") String emailFrom,
+                                                 @Value("${mail.subject.status}") String subject,
                                                  TemplateService templateService) {
-        super(claimService, emailFrom, "Изменен статус по вашей заявке на подключение к RBK.money");
+        super(claimService, emailFrom, subject);
         this.templateService = templateService;
     }
 

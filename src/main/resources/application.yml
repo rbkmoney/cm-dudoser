@@ -55,6 +55,9 @@ mail:
   password: ""
   from: no-reply@rbkmoney.com
   protocol: smtp
+  subject:
+    status: "Изменен статус по вашей заявке на подключение к RBK.money"
+    comment: "Добавлен новый комментарий по вашей заявке на подключение к RBK.money"
   retry:
     max:
       attempts: 3
