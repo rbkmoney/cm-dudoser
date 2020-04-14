@@ -18,10 +18,11 @@ public class ClaimEventSinkListener {
     public void handle(Event event, Acknowledgment ack) throws TException {
         log.info("Handle claim management Event get started, event={}", event);
 
-        if (event.getUserInfo() != null && event.getUserInfo().getType().isSetInternalUser()) {
+
+        if (event.getUserInfo() != null) {
             claimHandlerProcessor.processEvent(event);
         } else {
-            log.info("Filtered external claim management Event, event={}", event);
+            log.info("Filter empty user info event, event={}", event);
         }
 
         log.info("Handle claim management Event finished, event={}", event);

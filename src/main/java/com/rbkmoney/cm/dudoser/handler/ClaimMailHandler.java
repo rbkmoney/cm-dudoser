@@ -33,8 +33,9 @@ public class ClaimMailHandler implements ClaimHandler {
     }
 
     private void handleEvent(Event event) {
-        Change change = event.getChange();
+        if (!event.getUserInfo().getType().isSetInternalUser()) return;
 
+        Change change = event.getChange();
         if (change.isSetStatusChanged()) {
             ClaimStatusChanged claimStatusChanged = change.getStatusChanged();
 

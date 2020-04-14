@@ -64,6 +64,8 @@ public class ClaimTelegramHandler implements ClaimHandler {
     }
 
     private void handleEvent(Event event) throws IOException {
+        if (!event.getUserInfo().getType().isSetExternalUser()) return;
+
         Change change = event.getChange();
 
         if (!change.isSetUpdated()) return;

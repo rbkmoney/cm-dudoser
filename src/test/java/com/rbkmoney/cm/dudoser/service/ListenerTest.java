@@ -101,7 +101,7 @@ public class ListenerTest {
 
     @Test
     public void testFileTelegramHandler() throws TException {
-        Event event = getEvent(getInternalUser(), getClaimUpdated(
+        Event event = getEvent(getExternalUser(), getClaimUpdated(
                 getClaimModification(getFileModification())
         ));
 
@@ -114,7 +114,7 @@ public class ListenerTest {
 
     @Test
     public void testCommentTelegramHandler() throws TException {
-        Event event = getEvent(getInternalUser(), getClaimUpdated(
+        Event event = getEvent(getExternalUser(), getClaimUpdated(
                 getClaimModification(getCommentModification())
         ));
 
