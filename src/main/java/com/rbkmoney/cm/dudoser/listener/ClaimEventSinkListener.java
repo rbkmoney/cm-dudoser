@@ -1,6 +1,6 @@
 package com.rbkmoney.cm.dudoser.listener;
 
-import com.rbkmoney.cm.dudoser.handler.ClaimHandler;
+import com.rbkmoney.cm.dudoser.handler.ClaimHandlerProcessor;
 import com.rbkmoney.damsel.claim_management.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,14 +12,14 @@ import org.springframework.kafka.support.Acknowledgment;
 @RequiredArgsConstructor
 public class ClaimEventSinkListener {
 
-    private final ClaimHandler claimHandler;
+    private final ClaimHandlerProcessor claimHandlerProcessor;
 
     @KafkaListener(topics = "${kafka.topics.claim-event-sink.id}", containerFactory = "kafkaListenerContainerFactory")
     public void handle(Event event, Acknowledgment ack) throws TException {
         log.info("Handle claim management Event get started, event={}", event);
 
         if (event.getUserInfo() != null && event.getUserInfo().getType().isSetInternalUser()) {
-            claimHandler.handle(event);
+            claimHandlerProcessor.processEvent(event);
         } else {
             log.info("Filtered external claim management Event, event={}", event);
         }

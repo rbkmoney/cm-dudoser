@@ -39,6 +39,6 @@ public class CommentChangeMessageBuilderServiceImpl extends AbstractMessageBuild
                 .comment(message.getText())
                 .build();
 
-        return templateService.process(claimData);
+        return templateService.buildTemplate(claimData);
     }
 }

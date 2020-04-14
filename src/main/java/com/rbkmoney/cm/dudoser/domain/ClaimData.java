@@ -9,7 +9,9 @@ public class ClaimData {
 
     private TemplateType templateType;
     private String id;
+    private String partyId;
     private String status;
     private String comment;
+    private String fileDownloadUrl;
 
 }
