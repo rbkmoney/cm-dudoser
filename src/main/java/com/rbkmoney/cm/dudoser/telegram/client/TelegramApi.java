@@ -32,7 +32,7 @@ public class TelegramApi {
                 "/sendMessage",
                 HttpMethod.POST,
                 new HttpEntity<TelegramSendMessageRequest>(sendMessageRequest),
-                new ParameterizedTypeReference<TelegramResponse<TelegramMessage>>() {
+                new ParameterizedTypeReference<>() {
                 }
         );
 
@@ -63,7 +63,7 @@ public class TelegramApi {
                 "/sendDocument",
                 HttpMethod.POST,
                 new HttpEntity<>(formData, httpHeaders),
-                new ParameterizedTypeReference<TelegramResponse<TelegramMessage>>() {
+                new ParameterizedTypeReference<>() {
                 }
         );
 

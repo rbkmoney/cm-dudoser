@@ -20,8 +20,9 @@ public class TelegramErrorHandler extends DefaultResponseErrorHandler {
         if (response.getStatusCode().is4xxClientError() || response.getStatusCode().is5xxServerError()) {
             String tlResp = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
             TelegramResponse telegramResponse = objectMapper.readValue(tlResp, TelegramResponse.class);
+            String msg = "code: " + response.getStatusCode() + " description: " + telegramResponse.getDescription();
 
-            throw new TelegramClientException(telegramResponse.getDescription());
+            throw new TelegramClientException(msg);
         }
 
     }

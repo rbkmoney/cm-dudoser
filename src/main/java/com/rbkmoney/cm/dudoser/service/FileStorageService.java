@@ -1,6 +1,7 @@
 package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.exception.ThriftClientException;
+import com.rbkmoney.file.storage.FileData;
 import com.rbkmoney.file.storage.FileStorageSrv;
 import com.rbkmoney.geck.common.util.TypeUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,14 @@ public class FileStorageService {
         } catch (TException e) {
             String errMsg = String.format("Exception during generate download url. fileId=%s", fileId);
             throw new ThriftClientException(errMsg, e);
+        }
+    }
+
+    public FileData getFileData(String fileId) {
+        try {
+            return fileStorageClient.getFileData(fileId);
+        } catch (TException e) {
+            throw new ThriftClientException(String.format("Get file data failed. fileId=%s", fileId));
         }
     }
 

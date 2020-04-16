@@ -64,7 +64,7 @@ public class ListenerTest {
         when(fileStorageService.getFileDownloadUrl(anyString(), any(Instant.class)))
                 .thenReturn("testUrl");
         FileInfo fileInfo = new FileInfo("testFileName", new byte[]{});
-        when(fileDownloadService.requestFile("testUrl")).thenReturn(fileInfo);
+        when(fileDownloadService.requestFile(anyString(), anyString())).thenReturn(fileInfo);
         listener = new ClaimEventSinkListener(claimHandlerProcessor);
     }
 
@@ -108,7 +108,7 @@ public class ListenerTest {
         listener.handle(event, () -> {});
 
         verify(fileStorageService, only()).getFileDownloadUrl(anyString(), any(Instant.class));
-        verify(fileDownloadService, only()).requestFile(anyString());
+        verify(fileDownloadService, only()).requestFile(anyString(), anyString());
         verify(telegramApi, only()).sendDocument(any(TelegramSendDocumentRequest.class), anyString());
     }
 

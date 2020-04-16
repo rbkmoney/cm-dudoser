@@ -94,7 +94,7 @@ public class ClaimTelegramHandler implements ClaimHandler {
             for (FileModificationUnit fileModification : fileModifications) {
                 String fileDownloadUrl = fileStorageService.getFileDownloadUrl(
                         fileModification.getId(), Instant.now().plus(30, ChronoUnit.MINUTES));
-                FileInfo file = fileDownloadService.requestFile(fileDownloadUrl);
+                FileInfo file = fileDownloadService.requestFile(fileDownloadUrl, fileModification.getId());
                 ClaimData claimData = ClaimData.builder()
                         .id(String.valueOf(claimId))
                         .partyId(partyId)
