@@ -49,7 +49,7 @@ public class TelegramApiTest extends AbstractIntegrationTest {
     public void sendMessageTest() throws IOException {
         mockServer.expect(requestTo(TelegramConfig.BASE_URL + telegramProperties.getToken() + "/sendMessage"))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess(getClassPathResource("sendMessage.json"), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(TestHelper.getClassPathResource("sendMessage.json", getClass()), MediaType.APPLICATION_JSON));
 
         String chatId = "506658066";
         String text = "Just some message";
@@ -62,7 +62,7 @@ public class TelegramApiTest extends AbstractIntegrationTest {
     public void sendDocumentTest() {
         mockServer.expect(requestTo(TelegramConfig.BASE_URL + telegramProperties.getToken() + "/sendDocument"))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess(getClassPathResource("sendDocument.json"), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(TestHelper.getClassPathResource("sendDocument.json", getClass()), MediaType.APPLICATION_JSON));
 
         String chatId = "546564632";
         String caption = "file text";
@@ -70,10 +70,6 @@ public class TelegramApiTest extends AbstractIntegrationTest {
                 new TelegramSendDocumentRequest(chatId, caption, new byte[]{}), "test.dat");
         Assert.assertEquals(chatId, message.getChat().getId().toString());
         Assert.assertEquals(caption, message.getCaption());
-    }
-
-    private ClassPathResource getClassPathResource(String filePath) {
-        return new ClassPathResource(filePath, getClass());
     }
 
 }
