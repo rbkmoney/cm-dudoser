@@ -1,0 +1,27 @@
+{
+  "ok":true,
+  "result":{
+    "message_id":663,
+    "from":{
+      "id":1142232760,
+      "is_bot":true,
+      "first_name":"CmDudoser",
+      "username":"Duddos"
+    },
+    "chat":{
+      "id":546564632,
+      "first_name":"Vitaxa",
+      "username":"Vitaxa64",
+      "type":"private"
+    },
+    "date":1586809310,
+    "document":{
+      "file_name":"test.sql",
+      "mime_type":"application/x-sql",
+      "file_id":"BQACAgIAAxkDAAICl16Uyd1brhdkiDuSXQUhwURKjjGXAAJWBgACwnmpSDiN58BHOHJGGAQ",
+      "file_unique_id":"AgADVgYAAsJ5qUg",
+      "file_size":2808
+    },
+    "caption":"file text"
+  }
+}

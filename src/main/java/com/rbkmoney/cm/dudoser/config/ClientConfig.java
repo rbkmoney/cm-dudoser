@@ -6,6 +6,7 @@ import com.rbkmoney.cm.dudoser.meta.UserIdentityRealmExtensionKit;
 import com.rbkmoney.cm.dudoser.meta.UserIdentityUsernameExtensionKit;
 import com.rbkmoney.damsel.claim_management.ClaimManagementSrv;
 import com.rbkmoney.damsel.messages.MessageServiceSrv;
+import com.rbkmoney.file.storage.FileStorageSrv;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,4 +46,14 @@ public class ClientConfig {
                 .withNetworkTimeout(timeout)
                 .build(MessageServiceSrv.Iface.class);
     }
+
+    @Bean
+    public FileStorageSrv.Iface fileStorageClient(@Value("${filestorage.client.adapter.url}") Resource resource,
+                                                  @Value("${filestorage.client.adapter.networkTimeout}") int timeout) throws IOException {
+        return new THSpawnClientBuilder()
+                .withAddress(resource.getURI())
+                .withNetworkTimeout(timeout)
+                .build(FileStorageSrv.Iface.class);
+    }
+
 }

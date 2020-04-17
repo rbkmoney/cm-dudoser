@@ -17,24 +17,30 @@ public class TemplateService {
     private static final String TITLE = "claimManagementData";
     private static final String STATUS_CHANGED_TEMPLATE = "vm/StatusChangedEntity.vm";
     private static final String COMMENT_CHANGED_TEMPLATE = "vm/CommentChangedEntity.vm";
+    private static final String TELEGRAM_COMMENT_CHANGE_TEMPLATE = "vm/TelegramCommentChange.vm";
+    private static final String TELEGRAM_FILE_CHANGE_TEMPLATE = "vm/TelegramFileChange.vm";
 
     private final VelocityEngine claimManagementTemplateEngine;
 
-    public String process(ClaimData data) {
+    public String buildTemplate(ClaimData data) {
         VelocityContext headerContext = new VelocityContext();
         headerContext.put(TITLE, data);
 
-        Template template = buildTemplate(data);
+        Template template = buildTemplateBasedOnType(data);
 
         return build(template, headerContext);
     }
 
-    private Template buildTemplate(ClaimData data) {
+    private Template buildTemplateBasedOnType(ClaimData data) {
         switch (data.getTemplateType()) {
-            case STATUSCHANGE:
+            case STATUS_CHANGE:
                 return claimManagementTemplateEngine.getTemplate(STATUS_CHANGED_TEMPLATE);
             case COMMENT:
                 return claimManagementTemplateEngine.getTemplate(COMMENT_CHANGED_TEMPLATE);
+            case TELEGRAM_FILE_CHANGE:
+                return claimManagementTemplateEngine.getTemplate(TELEGRAM_FILE_CHANGE_TEMPLATE);
+            case TELEGRAM_COMMENT_CHANGE:
+                return claimManagementTemplateEngine.getTemplate(TELEGRAM_COMMENT_CHANGE_TEMPLATE);
             default:
                 throw new NotFoundException("templateType not found");
         }

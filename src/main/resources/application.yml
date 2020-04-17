@@ -68,6 +68,10 @@ mail:
     timeout: 30000
     starttls:
       enable: true
+telegram:
+  enable: true
+  token: "1107053992:AAHrXRuydhcKzIKS93tZ2q5gUxNaQiQnhtI"
+  chatId: 1208034847
 claimmanagement:
   client:
     adapter:
@@ -77,4 +81,9 @@ conversations:
   client:
     adapter:
       url: http://localhost:8022/v1/conversations
+      networkTimeout: 30000
+filestorage:
+  client:
+    adapter:
+      url: http://localhost:8022/v1/filestorage
       networkTimeout: 30000

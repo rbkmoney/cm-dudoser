@@ -19,6 +19,7 @@ public class TemplateTest {
 
     private static final String COMMENT_TEMPLATE = "ответ";
     private static final String STATUS_TEMPLATE = "изменен";
+    private static final String FILE_TEMPLATE = "Новый файл";
 
     @Autowired
     private TemplateService templateService;
@@ -27,10 +28,10 @@ public class TemplateTest {
     public void velocityTemplateTest() throws Exception {
         ClaimData claimData = ClaimData.builder()
                 .id("12e")
-                .templateType(TemplateType.STATUSCHANGE)
+                .templateType(TemplateType.STATUS_CHANGE)
                 .status(ClaimStatus.ACCEPTED.getCyrillicValue())
                 .build();
-        String process = templateService.process(claimData);
+        String process = templateService.buildTemplate(claimData);
         assertTrue(process.contains(STATUS_TEMPLATE));
 
         claimData = ClaimData.builder()
@@ -38,7 +39,15 @@ public class TemplateTest {
                 .templateType(TemplateType.COMMENT)
                 .comment("я дед инсайд")
                 .build();
-        process = templateService.process(claimData);
+        process = templateService.buildTemplate(claimData);
         assertTrue(process.contains(COMMENT_TEMPLATE));
+
+        claimData = ClaimData.builder()
+                .id("12e")
+                .templateType(TemplateType.TELEGRAM_FILE_CHANGE)
+                .comment("я лиф инсайд")
+                .build();
+        process = templateService.buildTemplate(claimData);
+        assertTrue(process.contains(FILE_TEMPLATE));
     }
 }

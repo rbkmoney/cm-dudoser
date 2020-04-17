@@ -1,8 +1,12 @@
 package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.CMDudoserApplication;
-import com.rbkmoney.cm.dudoser.handler.ClaimHandler;
+import com.rbkmoney.cm.dudoser.handler.ClaimHandlerProcessor;
 import com.rbkmoney.cm.dudoser.listener.ClaimEventSinkListener;
+import com.rbkmoney.cm.dudoser.service.model.FileInfo;
+import com.rbkmoney.cm.dudoser.telegram.client.TelegramApi;
+import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramSendDocumentRequest;
+import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramSendMessageRequest;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.damsel.messages.Conversation;
 import com.rbkmoney.damsel.messages.Message;
@@ -10,11 +14,13 @@ import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Instant;
 import java.util.List;
 
 import static io.github.benas.randombeans.api.EnhancedRandom.random;
@@ -36,7 +42,16 @@ public class ListenerTest {
     private ConversationService conversationService;
 
     @Autowired
-    private ClaimHandler claimHandler;
+    private ClaimHandlerProcessor claimHandlerProcessor;
+
+    @MockBean
+    private FileStorageService fileStorageService;
+
+    @MockBean
+    private FileDownloadService fileDownloadService;
+
+    @MockBean
+    private TelegramApi telegramApi;
 
     private String email = "no-reply@rbk.com";
     private ClaimEventSinkListener listener;
@@ -46,7 +61,11 @@ public class ListenerTest {
         doNothing().when(retryableSenderService).sendToMail(any());
         when(conversationService.getConversation(anyString())).thenReturn(getConversation());
         when(claimService.getEmailByClaim(any(), anyString(), anyLong())).thenReturn(email);
-        listener = new ClaimEventSinkListener(claimHandler);
+        when(fileStorageService.getFileDownloadUrl(anyString(), any(Instant.class)))
+                .thenReturn("testUrl");
+        FileInfo fileInfo = new FileInfo("testFileName", new byte[]{});
+        when(fileDownloadService.requestFile(anyString(), anyString())).thenReturn(fileInfo);
+        listener = new ClaimEventSinkListener(claimHandlerProcessor);
     }
 
     @Test
@@ -67,17 +86,41 @@ public class ListenerTest {
         sendMail(listener, getEvent(getInternalUser(), getClaimStatus(getClaimPending())), 1);
 
         //modification типа НЕ comment пропускается
-        sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getNotCommentModification()))), 0);
+        sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getFileModification()))), 0);
 
         sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))), 1);
 
         Change claimUpdated = getClaimUpdated(
                 getClaimModification(getCommentModification()),
-                getClaimModification(getNotCommentModification()),
+                getClaimModification(getFileModification()),
                 getClaimModification(getCommentModification())
         );
 
         sendMail(listener, getEvent(getInternalUser(), claimUpdated), 2);
+    }
+
+    @Test
+    public void testFileTelegramHandler() throws TException {
+        Event event = getEvent(getExternalUser(), getClaimUpdated(
+                getClaimModification(getFileModification())
+        ));
+
+        listener.handle(event, () -> {});
+
+        verify(fileStorageService, only()).getFileDownloadUrl(anyString(), any(Instant.class));
+        verify(fileDownloadService, only()).requestFile(anyString(), anyString());
+        verify(telegramApi, only()).sendDocument(any(TelegramSendDocumentRequest.class), anyString());
+    }
+
+    @Test
+    public void testCommentTelegramHandler() throws TException {
+        Event event = getEvent(getExternalUser(), getClaimUpdated(
+                getClaimModification(getCommentModification())
+        ));
+
+        listener.handle(event, () -> {});
+
+        verify(telegramApi, only()).sendMessage(any(TelegramSendMessageRequest.class));
     }
 
     private void sendMail(ClaimEventSinkListener listener, Event event, int timesSending) throws TException {
@@ -120,7 +163,7 @@ public class ListenerTest {
                 modificationUnit,
                 getModificationUnit(getInternalUser(), getCommentModification()),
                 getModificationUnit(getInternalUser(), getStatusModification(getClaimPending())),
-                getModificationUnit(getExternalUser(), getNotCommentModification())
+                getModificationUnit(getExternalUser(), getFileModification())
         );
         return getClaim(getClaimPending(), changeset);
     }
@@ -154,7 +197,7 @@ public class ListenerTest {
         return ClaimModification.status_modification(modificationUnit);
     }
 
-    private ClaimModification getNotCommentModification() {
+    private ClaimModification getFileModification() {
         FileModificationUnit modificationUnit = new FileModificationUnit();
         modificationUnit.setId("asd");
         modificationUnit.setModification(FileModification.creation(new FileCreated()));

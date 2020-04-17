@@ -28,12 +28,12 @@ public class StatusChangeMessageBuilderServiceImpl extends AbstractMessageBuilde
 
     protected String getContent(ClaimStatusChanged claimStatusChanged, long claimId) {
         ClaimData claimData = ClaimData.builder()
-                .templateType(TemplateType.STATUSCHANGE)
+                .templateType(TemplateType.STATUS_CHANGE)
                 .id(String.valueOf(claimId))
                 .status(convertStatus(claimStatusChanged.getStatus()))
                 .build();
 
-        return templateService.process(claimData);
+        return templateService.buildTemplate(claimData);
     }
 
     private String convertStatus(ClaimStatus tClaimStatus) {
