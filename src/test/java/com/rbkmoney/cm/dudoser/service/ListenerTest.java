@@ -10,11 +10,15 @@ import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramSendMessageRequest;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.damsel.messages.Conversation;
 import com.rbkmoney.damsel.messages.Message;
+import com.rbkmoney.questionary.Contractor;
+import com.rbkmoney.questionary.IndividualEntity;
+import com.rbkmoney.questionary.RussianIndividualEntity;
+import com.rbkmoney.questionary.manage.Questionary;
+import com.rbkmoney.questionary.manage.QuestionaryData;
 import org.apache.thrift.TException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -49,6 +53,9 @@ public class ListenerTest {
 
     @MockBean
     private FileDownloadService fileDownloadService;
+
+    @MockBean
+    private QuestionaryService questionaryService;
 
     @MockBean
     private TelegramApi telegramApi;
@@ -123,6 +130,28 @@ public class ListenerTest {
         verify(telegramApi, only()).sendMessage(any(TelegramSendMessageRequest.class));
     }
 
+    @Test
+    public void testDocumentTelegramHandler() throws TException {
+        when(questionaryService.getQuestionary(anyString(), anyString())).thenReturn(buildQuestionary());
+
+        Event event = getEvent(getExternalUser(), getClaimCreated(
+                getClaimModification(getDocumentModification())
+        ));
+
+        listener.handle(event, () -> {});
+
+        verify(telegramApi, only()).sendMessage(any(TelegramSendMessageRequest.class));
+    }
+
+    @Test
+    public void testNewClaimTelegramHandler() throws TException {
+        Event event = getEvent(getExternalUser(), getClaimCreated());
+
+        listener.handle(event, () -> {});
+
+        verify(telegramApi, only()).sendMessage(any(TelegramSendMessageRequest.class));
+    }
+
     private void sendMail(ClaimEventSinkListener listener, Event event, int timesSending) throws TException {
         reset(retryableSenderService);
         listener.handle(event, () -> {
@@ -140,6 +169,12 @@ public class ListenerTest {
     private Change getClaimCreated() {
         ClaimCreated changed = random(ClaimCreated.class, "changeset");
         changed.setChangeset(List.of(getClaimModification(getCommentModification())));
+        return Change.created(changed);
+    }
+
+    private Change getClaimCreated(Modification... modifications) {
+        ClaimCreated changed = random(ClaimCreated.class, "changeset");
+        changed.setChangeset(List.of(modifications));
         return Change.created(changed);
     }
 
@@ -211,6 +246,13 @@ public class ListenerTest {
         return modification;
     }
 
+    private ClaimModification getDocumentModification() {
+        DocumentModificationUnit documentModificationUnit = new DocumentModificationUnit();
+        documentModificationUnit.setId("asd");
+        documentModificationUnit.setModification(DocumentModification.creation(new DocumentCreated()));
+        return ClaimModification.document_modification(documentModificationUnit);
+    }
+
     private UserInfo getUserInfo(UserType userType) {
         UserInfo userInfo = random(UserInfo.class, "type");
         userInfo.setType(userType);
@@ -240,4 +282,19 @@ public class ListenerTest {
     private UserType getInternalUser() {
         return UserType.internal_user(new InternalUser());
     }
+
+    private Questionary buildQuestionary() {
+        Questionary questionary = new Questionary();
+        questionary.setId("testId");
+        questionary.setPartyId("testPartyId");
+        questionary.setOwnerId("ownerId");
+        QuestionaryData questionaryData = new QuestionaryData();
+        IndividualEntity individualEntity = new IndividualEntity();
+        individualEntity.setRussianIndividualEntity(new RussianIndividualEntity());
+        questionaryData.setContractor(Contractor.individual_entity(individualEntity));
+        questionary.setData(questionaryData);
+
+        return questionary;
+    }
+
 }

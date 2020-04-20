@@ -4,6 +4,7 @@ import com.rbkmoney.damsel.claim_management.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,23 +12,29 @@ import java.util.stream.Collectors;
 public class ClaimHelper {
 
     public static boolean containsCommentModifications(Change change) {
-        if (change.isSetUpdated()) {
-            return change.getUpdated().getChangeset().stream()
-                    .filter(Modification::isSetClaimModification)
-                    .map(Modification::getClaimModification)
-                    .anyMatch(ClaimModification::isSetCommentModification);
-        }
-        return false;
+        List<Modification> modifications = getChangeSet(change);
+        return modifications.stream()
+                .filter(Modification::isSetClaimModification)
+                .map(Modification::getClaimModification)
+                .anyMatch(ClaimModification::isSetCommentModification);
     }
 
     public static boolean containsFileModifications(Change change) {
-        if (change.isSetUpdated()) {
-            return change.getUpdated().getChangeset().stream()
-                    .filter(Modification::isSetClaimModification)
-                    .map(Modification::getClaimModification)
-                    .anyMatch(ClaimModification::isSetFileModification);
-        }
-        return false;
+        List<Modification> modifications = getChangeSet(change);
+        return modifications.stream()
+                .filter(Modification::isSetClaimModification)
+                .map(Modification::getClaimModification)
+                .anyMatch(ClaimModification::isSetFileModification);
+
+    }
+
+    public static boolean containsDocumentModifications(Change change) {
+        List<Modification> modifications = getChangeSet(change);
+        return modifications.stream()
+                .filter(Modification::isSetClaimModification)
+                .map(Modification::getClaimModification)
+                .anyMatch(ClaimModification::isSetDocumentModification);
+
     }
 
     public static List<CommentModificationUnit> getCommentModifications(List<Modification> modifications) {
@@ -46,6 +53,25 @@ public class ClaimHelper {
                 .filter(ClaimModification::isSetFileModification)
                 .map(ClaimModification::getFileModification)
                 .collect(Collectors.toList());
+    }
+
+    public static List<DocumentModificationUnit> getDocumentModifications(List<Modification> modifications) {
+        return modifications.stream()
+                .filter(Modification::isSetClaimModification)
+                .map(Modification::getClaimModification)
+                .filter(ClaimModification::isSetDocumentModification)
+                .map(ClaimModification::getDocumentModification)
+                .collect(Collectors.toList());
+    }
+
+    public static List<Modification> getChangeSet(Change change) {
+        List<Modification> modifications = Collections.emptyList();
+        if (change.isSetCreated()) {
+            modifications = change.getCreated().getChangeset();
+        } else if (change.isSetUpdated()) {
+            modifications = change.getUpdated().getChangeset();
+        }
+        return modifications;
     }
 
 }
