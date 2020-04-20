@@ -70,7 +70,7 @@ public class ListenerTest {
         when(claimService.getEmailByClaim(any(), anyString(), anyLong())).thenReturn(email);
         when(fileStorageService.getFileDownloadUrl(anyString(), any(Instant.class)))
                 .thenReturn("testUrl");
-        FileInfo fileInfo = new FileInfo("testFileName", new byte[]{});
+        FileInfo fileInfo = new FileInfo("testFileName", new byte[]{1, 2 ,3});
         when(fileDownloadService.requestFile(anyString(), anyString())).thenReturn(fileInfo);
         listener = new ClaimEventSinkListener(claimHandlerProcessor);
     }

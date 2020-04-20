@@ -199,7 +199,7 @@ public class ClaimTelegramHandler implements ClaimHandler {
         if (change.isSetCreated()) {
             return change.getCreated().getPartyId();
         } else if (change.isSetUpdated()) {
-            return change.getCreated().getPartyId();
+            return change.getUpdated().getPartyId();
         } else if (change.isSetStatusChanged()) {
             return change.getStatusChanged().getPartyId();
         }
@@ -210,7 +210,7 @@ public class ClaimTelegramHandler implements ClaimHandler {
         if (change.isSetCreated()) {
             return change.getCreated().getId();
         } else if (change.isSetUpdated()) {
-            return change.getCreated().getId();
+            return change.getUpdated().getId();
         } else if (change.isSetStatusChanged()) {
             return change.getStatusChanged().getId();
         }
