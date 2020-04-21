@@ -70,7 +70,7 @@ mail:
       enable: true
 telegram:
   enable: true
-  token: "1107053992:AAHrXRuydhcKzIKS93tZ2q5gUxNaQiQnhtI"
+  token: "2516358543:cFEghkRsQxGthdEc14Kslx9m1kPDqDcGlra"
   chatId: 1208034847
 claimmanagement:
   client:
@@ -86,4 +86,9 @@ filestorage:
   client:
     adapter:
       url: http://localhost:8022/v1/filestorage
+      networkTimeout: 30000
+questionary:
+  client:
+    adapter:
+      url: http://localhost:8022/v1/questionary
       networkTimeout: 30000

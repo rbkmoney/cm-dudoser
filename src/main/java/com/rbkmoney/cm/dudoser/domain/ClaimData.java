@@ -13,5 +13,6 @@ public class ClaimData {
     private String status;
     private String comment;
     private String fileDownloadUrl;
+    private ClaimDocumentData claimDocumentData;
 
 }

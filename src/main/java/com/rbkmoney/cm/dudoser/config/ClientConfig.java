@@ -7,6 +7,7 @@ import com.rbkmoney.cm.dudoser.meta.UserIdentityUsernameExtensionKit;
 import com.rbkmoney.damsel.claim_management.ClaimManagementSrv;
 import com.rbkmoney.damsel.messages.MessageServiceSrv;
 import com.rbkmoney.file.storage.FileStorageSrv;
+import com.rbkmoney.questionary.manage.QuestionaryManagerSrv;
 import com.rbkmoney.woody.thrift.impl.http.THSpawnClientBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,6 +55,15 @@ public class ClientConfig {
                 .withAddress(resource.getURI())
                 .withNetworkTimeout(timeout)
                 .build(FileStorageSrv.Iface.class);
+    }
+
+    @Bean
+    public QuestionaryManagerSrv.Iface questionaryClient(@Value("${questionary.client.adapter.url}") Resource resource,
+                                                         @Value("${questionary.client.adapter.networkTimeout}") int timeout) throws IOException {
+        return new THSpawnClientBuilder()
+                .withAddress(resource.getURI())
+                .withNetworkTimeout(timeout)
+                .build(QuestionaryManagerSrv.Iface.class);
     }
 
 }

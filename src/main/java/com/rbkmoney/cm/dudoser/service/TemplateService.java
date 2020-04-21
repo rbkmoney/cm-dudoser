@@ -19,6 +19,9 @@ public class TemplateService {
     private static final String COMMENT_CHANGED_TEMPLATE = "vm/CommentChangedEntity.vm";
     private static final String TELEGRAM_COMMENT_CHANGE_TEMPLATE = "vm/TelegramCommentChange.vm";
     private static final String TELEGRAM_FILE_CHANGE_TEMPLATE = "vm/TelegramFileChange.vm";
+    private static final String TELEGRAM_IP_CREATED_TEMPLATE = "vm/TelegramCreatedIndividualEntity.vm";
+    private static final String TELEGRAM_LE_CREATED_TEMPLATE = "vm/TelegramCreatedLegalEntity.vm";
+    private static final String TELEGRAM_NEW_CLAIM_TEMPLATE = "vm/TelegramNewClaim.vm";
 
     private final VelocityEngine claimManagementTemplateEngine;
 
@@ -41,8 +44,14 @@ public class TemplateService {
                 return claimManagementTemplateEngine.getTemplate(TELEGRAM_FILE_CHANGE_TEMPLATE);
             case TELEGRAM_COMMENT_CHANGE:
                 return claimManagementTemplateEngine.getTemplate(TELEGRAM_COMMENT_CHANGE_TEMPLATE);
+            case TELEGRAM_IP_DOCUMENT_CHANGE:
+                return claimManagementTemplateEngine.getTemplate(TELEGRAM_IP_CREATED_TEMPLATE);
+            case TELEGRAM_LE_DOCUMENT_CHANGE:
+                return claimManagementTemplateEngine.getTemplate(TELEGRAM_LE_CREATED_TEMPLATE);
+            case TELEGRAM_NEW_CLAIM:
+                return claimManagementTemplateEngine.getTemplate(TELEGRAM_NEW_CLAIM_TEMPLATE);
             default:
-                throw new NotFoundException("templateType not found");
+                throw new NotFoundException("templateType not found: " + data.getTemplateType());
         }
     }
 
