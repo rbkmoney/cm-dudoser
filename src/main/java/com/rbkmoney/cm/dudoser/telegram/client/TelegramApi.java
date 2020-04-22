@@ -53,7 +53,7 @@ public class TelegramApi {
             formData.add("caption", sendDocumentRequest.getCaption());
         }
         if (sendDocumentRequest.getParseMode() != null) {
-            formData.add("parse_mode", sendDocumentRequest.getParseMode());
+            formData.add("parse_mode", sendDocumentRequest.getParseMode().name());
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
