@@ -12,13 +12,13 @@ public class TelegramSendDocumentRequest extends TelegramMediaRequest {
     public TelegramSendDocumentRequest(String chatId,
                                        String caption,
                                        byte[] document) {
-        this(chatId, document, false, caption, null);
+        this(chatId, caption, document, false, null);
     }
 
     public TelegramSendDocumentRequest(String chatId,
+                                       String caption,
                                        byte[] document,
                                        Boolean disableNotification,
-                                       String caption,
                                        TelegramParseMode parseMode) {
         super(chatId, disableNotification, caption, parseMode);
         this.document = document;

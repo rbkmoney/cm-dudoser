@@ -114,7 +114,8 @@ public class ClaimTelegramHandler implements ClaimHandler {
                     .build();
             String fileMessage = templateService.buildTemplate(claimData);
 
-            TelegramSendDocumentRequest documentRequest = new TelegramSendDocumentRequest(chatId, fileMessage, file.getFileData());
+            TelegramSendDocumentRequest documentRequest =
+                    new TelegramSendDocumentRequest(chatId, fileMessage, file.getFileData(), false, TelegramParseMode.HTML);
             telegramApi.sendDocument(documentRequest, file.getFileName());
         }
     }
