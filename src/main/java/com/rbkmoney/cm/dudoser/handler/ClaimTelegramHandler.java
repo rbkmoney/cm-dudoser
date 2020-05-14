@@ -178,7 +178,7 @@ public class ClaimTelegramHandler implements ClaimHandler {
                         .registrationAddress(legalRegistrationInfo != null ? legalRegistrationInfo.getRegistrationAddress() : null)
                         .okato(russianLegalEntity.getOkatoCode())
                         .okpo(russianLegalEntity.getOkpoCode())
-                        .headPosition(legalOwnerInfo.getHeadPosition())
+                        .headPosition(legalOwnerInfo != null ? legalOwnerInfo.getHeadPosition() : null)
                         .headFio(russianPrivateEntity != null ? russianPrivateEntity.getFio() : null)
                         .build();
             } else {
