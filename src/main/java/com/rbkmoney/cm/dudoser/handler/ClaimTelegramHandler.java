@@ -168,7 +168,7 @@ public class ClaimTelegramHandler implements ClaimHandler {
                 RegistrationInfo registrationInfo = russianLegalEntity.getRegistrationInfo();
                 LegalRegistrationInfo legalRegistrationInfo = registrationInfo != null ? registrationInfo.getLegalRegistrationInfo() : null;
                 LegalOwnerInfo legalOwnerInfo = russianLegalEntity.getLegalOwnerInfo();
-                RussianPrivateEntity russianPrivateEntity = legalOwnerInfo.getRussianPrivateEntity();
+                RussianPrivateEntity russianPrivateEntity = legalOwnerInfo != null ? legalOwnerInfo.getRussianPrivateEntity() : null;
                 templateType = TemplateType.TELEGRAM_LE_DOCUMENT_CHANGE;
                 claimDocumentData = ClaimDocumentData.builder()
                         .ownerId(questionary.getOwnerId())
