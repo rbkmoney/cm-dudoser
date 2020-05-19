@@ -1,6 +1,7 @@
 package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.CMDudoserApplication;
+import com.rbkmoney.cm.dudoser.filter.TestEventFilter;
 import com.rbkmoney.cm.dudoser.handler.ClaimHandlerProcessor;
 import com.rbkmoney.cm.dudoser.listener.ClaimEventSinkListener;
 import com.rbkmoney.cm.dudoser.service.model.FileInfo;
@@ -48,6 +49,9 @@ public class ListenerTest {
     @Autowired
     private ClaimHandlerProcessor claimHandlerProcessor;
 
+    @Autowired
+    private TestEventFilter testEventFilter;
+
     @MockBean
     private FileStorageService fileStorageService;
 
@@ -72,13 +76,14 @@ public class ListenerTest {
                 .thenReturn("testUrl");
         FileInfo fileInfo = new FileInfo("testFileName", new byte[]{1, 2 ,3});
         when(fileDownloadService.requestFile(anyString(), anyString())).thenReturn(fileInfo);
-        listener = new ClaimEventSinkListener(claimHandlerProcessor);
+        listener = new ClaimEventSinkListener(claimHandlerProcessor, testEventFilter);
     }
 
     @Test
     public void testExternalUser() throws Exception {
         //если тип пользователя External, то сервис пропускает любой тип получаемого change
         sendMail(listener, getEvent(getExternalUser(), getClaimCreated()), 0);
+        sendMail(listener, getEvent(getExternalUser(), getClaimTestPartyCreated()), 0);
         sendMail(listener, getEvent(getExternalUser(), getClaimStatus(getClaimPending())), 0);
         sendMail(listener, getEvent(getExternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))), 0);
     }
@@ -169,6 +174,13 @@ public class ListenerTest {
     private Change getClaimCreated() {
         ClaimCreated changed = random(ClaimCreated.class, "changeset");
         changed.setChangeset(List.of(getClaimModification(getCommentModification())));
+        return Change.created(changed);
+    }
+
+    private Change getClaimTestPartyCreated() {
+        ClaimCreated changed = random(ClaimCreated.class, "changeset");
+        changed.setChangeset(List.of(getClaimModification(getCommentModification())));
+        changed.setPartyId("test");
         return Change.created(changed);
     }
 

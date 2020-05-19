@@ -92,3 +92,7 @@ questionary:
     adapter:
       url: http://localhost:8022/v1/questionary
       networkTimeout: 30000
+filter:
+  test:
+    party-ids: |
+      test
