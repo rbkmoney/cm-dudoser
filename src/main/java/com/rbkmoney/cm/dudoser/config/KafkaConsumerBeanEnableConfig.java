@@ -1,5 +1,6 @@
 package com.rbkmoney.cm.dudoser.config;
 
+import com.rbkmoney.cm.dudoser.filter.TestEventFilter;
 import com.rbkmoney.cm.dudoser.handler.ClaimHandler;
 import com.rbkmoney.cm.dudoser.handler.ClaimHandlerProcessor;
 import com.rbkmoney.cm.dudoser.listener.ClaimEventSinkListener;
@@ -16,14 +17,13 @@ public class KafkaConsumerBeanEnableConfig {
 
     @Bean
     @ConditionalOnProperty(value = "kafka.topics.claim-event-sink.enabled", havingValue = "true")
-    public ClaimEventSinkListener paymentEventsKafkaListener(ClaimHandlerProcessor claimHandlerProcessor) {
-        return new ClaimEventSinkListener(claimHandlerProcessor);
+    public ClaimEventSinkListener paymentEventsKafkaListener(ClaimHandlerProcessor claimHandlerProcessor, TestEventFilter testEventFilter) {
+        return new ClaimEventSinkListener(claimHandlerProcessor, testEventFilter);
     }
 
     @Bean
     public ClaimHandlerProcessor claimHandlerProcessor(List<ClaimHandler> claimHandlers) {
         return new ClaimHandlerProcessor(claimHandlers);
     }
-
 
 }
