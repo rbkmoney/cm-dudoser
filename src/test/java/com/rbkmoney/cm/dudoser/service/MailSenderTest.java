@@ -99,7 +99,7 @@ public class MailSenderTest {
                 .from("no-reply@rbk.com")
                 .to("info@rbk.com")
                 .subject("Spring Mail Integration Testing with JUnit and GreenMail Example")
-                .content("We show how to write Integration Tests using Spring and GreenMail.")
+                .content("<span style=\"color: #2d2d2d; font-style: italic\">We show how to write Integration Tests using Spring and GreenMail.</span>")
                 .build();
     }
 

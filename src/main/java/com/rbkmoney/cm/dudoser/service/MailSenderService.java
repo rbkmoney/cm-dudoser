@@ -41,7 +41,7 @@ public class MailSenderService {
         helper.setFrom(message.getFrom());
         helper.setTo(message.getTo());
         helper.setSubject(message.getSubject());
-        helper.setText(message.getContent(), false);
+        helper.setText(message.getContent(), true);
         return mimeMessage;
     }
 }
