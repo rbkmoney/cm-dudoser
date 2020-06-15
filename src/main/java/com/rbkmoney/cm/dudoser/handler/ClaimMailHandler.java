@@ -1,6 +1,7 @@
 package com.rbkmoney.cm.dudoser.handler;
 
 import com.rbkmoney.cm.dudoser.domain.Message;
+import com.rbkmoney.cm.dudoser.exception.NotFoundException;
 import com.rbkmoney.cm.dudoser.helper.ClaimHelper;
 import com.rbkmoney.cm.dudoser.service.MessageBuilderService;
 import com.rbkmoney.cm.dudoser.service.RetryableSenderService;
@@ -24,6 +25,8 @@ public class ClaimMailHandler implements ClaimHandler {
     public void handle(Event event, ClaimHandlerChain chain) {
         try {
             handleEvent(event);
+        } catch (NotFoundException ex) {
+            log.error("Exception during handle claim event", ex);
         } catch (Exception ex) {
             log.error("Exception during handle claim event", ex);
             throw new ClaimHandlerException(ex);
