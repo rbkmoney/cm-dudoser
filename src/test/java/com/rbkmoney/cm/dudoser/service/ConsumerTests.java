@@ -3,6 +3,7 @@ package com.rbkmoney.cm.dudoser.service;
 import com.rbkmoney.cm.dudoser.config.AbstractKafkaConfig;
 import com.rbkmoney.cm.dudoser.domain.Message;
 import com.rbkmoney.cm.dudoser.exception.MailSendException;
+import com.rbkmoney.cm.dudoser.exception.NotFoundException;
 import com.rbkmoney.damsel.claim_management.*;
 import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,42 @@ public class ConsumerTests extends AbstractKafkaConfig {
 
     @MockBean
     private MessageBuilderService<ClaimStatusChanged> statusMessageBuilder;
+
+    @Test
+    public void notFoundExceptionIsSneakyThrowTest() {
+        ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
+
+        Event event = new Event();
+        event.setUserInfo(getUserInfo());
+        event.setOccuredAt(LocalDateTime.now().toString());
+        event.setChange(Change.status_changed(claimStatusChanged));
+
+        when(statusMessageBuilder.build(eq(claimStatusChanged), any(), anyString(), anyLong())).thenThrow(NotFoundException.class);
+        doNothing().when(retryableSenderService).sendToMail(any());
+
+        try {
+            DefaultKafkaProducerFactory<String, Event> producerFactory = createProducerFactory();
+
+            KafkaTemplate<String, Event> kafkaTemplate = new KafkaTemplate<>(producerFactory);
+
+            TimeUnit.SECONDS.sleep(1);
+
+            kafkaTemplate.send(
+                    topic,
+                    random(String.class),
+                    event
+            )
+                    .get();
+
+            TimeUnit.SECONDS.sleep(1);
+        } catch (ExecutionException | InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
+        verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
+        // проверяем что ивент из кафки был корректно отправлен сообщением на почтовый сервер
+        verify(retryableSenderService, times(0)).sendToMail(any());
+    }
 
     @Test
     public void correctFlowTest() {
