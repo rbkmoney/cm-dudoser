@@ -73,7 +73,6 @@ public class ConsumerTests extends AbstractKafkaConfig {
         }
 
         verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
-        // проверяем что ивент из кафки был корректно отправлен сообщением на почтовый сервер
         verify(retryableSenderService, times(0)).sendToMail(any());
     }
 
