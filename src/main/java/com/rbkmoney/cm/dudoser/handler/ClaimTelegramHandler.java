@@ -181,6 +181,17 @@ public class ClaimTelegramHandler implements ClaimHandler {
                         .headPosition(legalOwnerInfo != null ? legalOwnerInfo.getHeadPosition() : null)
                         .headFio(russianPrivateEntity != null ? russianPrivateEntity.getFio() : null)
                         .build();
+            } else if (contractor.getLegalEntity().isSetInternationalLegalEntity()) {
+                InternationalLegalEntity internationalLegalEntity = contractor.getLegalEntity().getInternationalLegalEntity();
+                templateType = TemplateType.TELEGRAM_ILE_DOCUMENT_CHANGE;
+                claimDocumentData = ClaimDocumentData.builder()
+                        .ownerId(questionary.getOwnerId())
+                        .internationalActualAddress(internationalLegalEntity.getActualAddress())
+                        .internationalTradingName(internationalLegalEntity.getTradingName())
+                        .internationalRegisteredAddress(internationalLegalEntity.getRegisteredAddress())
+                        .internationalRegisteredNumber(internationalLegalEntity.getRegisteredNumber())
+                        .internationalLegalName(internationalLegalEntity.getLegalName())
+                        .build();
             } else {
                 throw new IllegalStateException("Unknown contractor type: " + contractor);
             }

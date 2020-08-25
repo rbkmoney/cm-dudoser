@@ -7,5 +7,5 @@ Registration date: $!claimManagementData.claimDocumentData.registrationDate
 Registration address: $!claimManagementData.claimDocumentData.registrationAddress
 Head FIO: $!claimManagementData.claimDocumentData.fio
 Owner ID: $!claimManagementData.claimDocumentData.ownerId
-Claim URL: http://iddqd.rbk.money/claim-mgt/party/$!claimManagementData.partyId/claim/$!claimManagementData.claimId
+Claim URL: http://iddqd.rbk.money/claim-mgt/party/$!claimManagementData.partyId/claim/$!claimManagementData.id
 </pre>

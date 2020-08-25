@@ -21,6 +21,7 @@ public class TemplateService {
     private static final String TELEGRAM_FILE_CHANGE_TEMPLATE = "vm/TelegramFileChange.vm";
     private static final String TELEGRAM_IP_CREATED_TEMPLATE = "vm/TelegramCreatedIndividualEntity.vm";
     private static final String TELEGRAM_LE_CREATED_TEMPLATE = "vm/TelegramCreatedLegalEntity.vm";
+    private static final String TELEGRAM_ILE_CREATED_TEMPLATE = "vm/TelegramCreatedInternationLegalEntity.vm";
     private static final String TELEGRAM_NEW_CLAIM_TEMPLATE = "vm/TelegramNewClaim.vm";
 
     private final VelocityEngine claimManagementTemplateEngine;
@@ -48,6 +49,8 @@ public class TemplateService {
                 return claimManagementTemplateEngine.getTemplate(TELEGRAM_IP_CREATED_TEMPLATE);
             case TELEGRAM_LE_DOCUMENT_CHANGE:
                 return claimManagementTemplateEngine.getTemplate(TELEGRAM_LE_CREATED_TEMPLATE);
+            case TELEGRAM_ILE_DOCUMENT_CHANGE:
+                return claimManagementTemplateEngine.getTemplate(TELEGRAM_ILE_CREATED_TEMPLATE);
             case TELEGRAM_NEW_CLAIM:
                 return claimManagementTemplateEngine.getTemplate(TELEGRAM_NEW_CLAIM_TEMPLATE);
             default:

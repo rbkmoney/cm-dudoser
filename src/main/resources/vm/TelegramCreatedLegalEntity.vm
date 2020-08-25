@@ -10,5 +10,5 @@ OKPO code: $!claimManagementData.claimDocumentData.okpo
 Head position: $!claimManagementData.claimDocumentData.headPosition
 Head FIO: $!claimManagementData.claimDocumentData.headFio
 Owner ID: $!claimManagementData.claimDocumentData.ownerId
-Claim URL: http://iddqd.rbk.money/claim-mgt/party/$!claimManagementData.partyId/claim/$!claimManagementData.claimId
+Claim URL: http://iddqd.rbk.money/claim-mgt/party/$!claimManagementData.partyId/claim/$!claimManagementData.id
 </pre>

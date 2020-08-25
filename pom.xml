@@ -31,7 +31,7 @@
         <geck.version>0.6.8</geck.version>
         <messages.proto.version>1.10-391d225</messages.proto.version>
         <file.storage.proto.version>1.24-a77c0c4</file.storage.proto.version>
-        <questionary.proto.version>1.21-21edf79</questionary.proto.version>
+        <questionary.proto.version>1.22-d638e44</questionary.proto.version>
     </properties>
 
     <dependencies>
