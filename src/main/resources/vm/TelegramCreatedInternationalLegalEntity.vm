@@ -1,0 +1,10 @@
+## @vtlvariable name="claimManagementData" type="com.rbkmoney.cm.dudoser.domain.ClaimData"
+Новая заявка <a href="http://iddqd.rbk.money/claim-mgt/party/$!claimManagementData.partyId/claim/$!claimManagementData.id">$!claimManagementData.id</a>:
+<pre>
+Legal name: $!claimManagementData.claimDocumentData.internationalLegalName
+Trading name: $!claimManagementData.claimDocumentData.internationalTradingName
+Registered address: $!claimManagementData.claimDocumentData.internationalRegisteredAddress
+Actual address: $!claimManagementData.claimDocumentData.internationalActualAddress
+Registered number: $!claimManagementData.claimDocumentData.internationalRegisteredNumber
+Claim URL: http://iddqd.rbk.money/claim-mgt/party/$!claimManagementData.partyId/claim/$!claimManagementData.id
+</pre>

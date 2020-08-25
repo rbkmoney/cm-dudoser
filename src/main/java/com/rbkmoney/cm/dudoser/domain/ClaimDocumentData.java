@@ -25,4 +25,14 @@ public class ClaimDocumentData {
 
     private String headFio;
 
+    private String internationalLegalName;
+
+    private String internationalTradingName;
+
+    private String internationalRegisteredAddress;
+
+    private String internationalActualAddress;
+
+    private String internationalRegisteredNumber;
+
 }
