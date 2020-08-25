@@ -21,7 +21,7 @@ public class TemplateService {
     private static final String TELEGRAM_FILE_CHANGE_TEMPLATE = "vm/TelegramFileChange.vm";
     private static final String TELEGRAM_IP_CREATED_TEMPLATE = "vm/TelegramCreatedIndividualEntity.vm";
     private static final String TELEGRAM_LE_CREATED_TEMPLATE = "vm/TelegramCreatedLegalEntity.vm";
-    private static final String TELEGRAM_ILE_CREATED_TEMPLATE = "vm/TelegramCreatedInternationLegalEntity.vm";
+    private static final String TELEGRAM_ILE_CREATED_TEMPLATE = "vm/TelegramCreatedInternationalLegalEntity.vm";
     private static final String TELEGRAM_NEW_CLAIM_TEMPLATE = "vm/TelegramNewClaim.vm";
 
     private final VelocityEngine claimManagementTemplateEngine;
