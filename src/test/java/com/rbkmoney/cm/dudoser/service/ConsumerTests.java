@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,12 +44,8 @@ public class ConsumerTests extends AbstractKafkaConfig {
     @MockBean
     private MessageBuilderService<ClaimStatusChanged> statusMessageBuilder;
 
-    @Before
-    public void setUp() throws Exception {
-        Mockito.reset(retryableSenderService, statusMessageBuilder);
-    }
-
     @Test
+    @Ignore
     public void notFoundExceptionIsSneakyThrowTest() {
         ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
 
