@@ -30,12 +30,6 @@ import static org.mockito.Mockito.*;
 @Slf4j
 public class ConsumerTests extends AbstractKafkaConfig {
 
-    @Value("${kafka.topics.claim-event-sink.id}")
-    public String topic;
-
-    @Value("${kafka.bootstrap.servers}")
-    private String bootstrapServers;
-
     @MockBean
     private RetryableSenderService retryableSenderService;
 
@@ -55,20 +49,12 @@ public class ConsumerTests extends AbstractKafkaConfig {
         doNothing().when(retryableSenderService).sendToMail(any());
 
         try {
-            DefaultKafkaProducerFactory<String, Event> producerFactory = createProducerFactory();
-
-            KafkaTemplate<String, Event> kafkaTemplate = new KafkaTemplate<>(producerFactory);
-
-            TimeUnit.SECONDS.sleep(1);
-
-            kafkaTemplate.send(
-                    topic,
-                    random(String.class),
-                    event
-            ).get();
-        } catch (ExecutionException | InterruptedException ex) {
-            ex.printStackTrace();
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
+        produceMessageToEventSink(event);
 
         waitAtMost(30, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
@@ -90,22 +76,13 @@ public class ConsumerTests extends AbstractKafkaConfig {
         doNothing().when(retryableSenderService).sendToMail(any());
 
         try {
-            DefaultKafkaProducerFactory<String, Event> producerFactory = createProducerFactory();
-
-            KafkaTemplate<String, Event> kafkaTemplate = new KafkaTemplate<>(producerFactory);
-
-            TimeUnit.SECONDS.sleep(1);
-
-            kafkaTemplate.send(
-                    topic,
-                    random(String.class),
-                    event
-            )
-                    .get();
-
-        } catch (ExecutionException | InterruptedException ex) {
-            ex.printStackTrace();
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
+
+        produceMessageToEventSink(event);
 
         waitAtMost(30, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
@@ -139,21 +116,12 @@ public class ConsumerTests extends AbstractKafkaConfig {
         ).when(retryableSenderService).sendToMail(any());
 
         try {
-            DefaultKafkaProducerFactory<String, Event> producerFactory = createProducerFactory();
-
-            KafkaTemplate<String, Event> kafkaTemplate = new KafkaTemplate<>(producerFactory);
-
-            TimeUnit.SECONDS.sleep(1);
-
-            kafkaTemplate.send(
-                    topic,
-                    random(String.class),
-                    event
-            )
-                    .get();
-        } catch (InterruptedException | ExecutionException e) {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        produceMessageToEventSink(event);
 
         waitAtMost(30, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
@@ -176,12 +144,4 @@ public class ConsumerTests extends AbstractKafkaConfig {
         return new ClaimStatusChanged(UUID.randomUUID().toString(), 1, ClaimStatus.pending(new ClaimPending()), 1, LocalDateTime.now().toString());
     }
 
-    private <T> DefaultKafkaProducerFactory<String, T> createProducerFactory() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, "client_id");
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, new ThriftSerializer<Event>().getClass().getName());
-        return new DefaultKafkaProducerFactory<>(props);
-    }
 }
