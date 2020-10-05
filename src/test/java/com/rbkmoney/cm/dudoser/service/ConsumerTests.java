@@ -9,10 +9,7 @@ import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -27,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.benas.randombeans.api.EnhancedRandom.random;
+import static org.awaitility.Awaitility.waitAtMost;
 import static org.mockito.Mockito.*;
 
 @Slf4j
@@ -45,7 +43,6 @@ public class ConsumerTests extends AbstractKafkaConfig {
     private MessageBuilderService<ClaimStatusChanged> statusMessageBuilder;
 
     @Test
-    @Ignore
     public void notFoundExceptionIsSneakyThrowTest() {
         ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
 
@@ -68,16 +65,16 @@ public class ConsumerTests extends AbstractKafkaConfig {
                     topic,
                     random(String.class),
                     event
-            )
-                    .get();
-
-            TimeUnit.SECONDS.sleep(1);
+            ).get();
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }
 
-        verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
-        verify(retryableSenderService, times(0)).sendToMail(any());
+        waitAtMost(30, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
+                    verify(retryableSenderService, times(0)).sendToMail(any());
+                });
     }
 
     @Test
@@ -106,14 +103,16 @@ public class ConsumerTests extends AbstractKafkaConfig {
             )
                     .get();
 
-            TimeUnit.SECONDS.sleep(1);
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }
 
-        verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
-        // проверяем что ивент из кафки был корректно отправлен сообщением на почтовый сервер
-        verify(retryableSenderService, times(1)).sendToMail(any());
+        waitAtMost(30, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    verify(statusMessageBuilder, times(1)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
+                    // проверяем что ивент из кафки был корректно отправлен сообщением на почтовый сервер
+                    verify(retryableSenderService, times(1)).sendToMail(any());
+                });
     }
 
     @Test
@@ -152,15 +151,16 @@ public class ConsumerTests extends AbstractKafkaConfig {
                     event
             )
                     .get();
-
-            TimeUnit.SECONDS.sleep(6);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-        verify(statusMessageBuilder, times(countRetries)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
-        // проверяем, что кафка пыталась обработать ивент такое количество раз, которое задано моку
-        verify(retryableSenderService, times(countRetries)).sendToMail(any());
+        waitAtMost(30, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    verify(statusMessageBuilder, times(countRetries)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
+                    // проверяем, что кафка пыталась обработать ивент такое количество раз, которое задано моку
+                    verify(retryableSenderService, times(countRetries)).sendToMail(any());
+                });
     }
 
     private UserInfo getUserInfo() {
