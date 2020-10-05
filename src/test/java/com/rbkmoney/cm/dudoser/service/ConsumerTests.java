@@ -9,7 +9,9 @@ import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -41,6 +43,11 @@ public class ConsumerTests extends AbstractKafkaConfig {
     @MockBean
     private MessageBuilderService<ClaimStatusChanged> statusMessageBuilder;
 
+    @Before
+    public void setUp() throws Exception {
+        Mockito.reset(retryableSenderService, statusMessageBuilder);
+    }
+
     @Test
     public void notFoundExceptionIsSneakyThrowTest() {
         ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
@@ -67,7 +74,7 @@ public class ConsumerTests extends AbstractKafkaConfig {
             )
                     .get();
 
-            TimeUnit.SECONDS.sleep(7);
+            TimeUnit.SECONDS.sleep(1);
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }
