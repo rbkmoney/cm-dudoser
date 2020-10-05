@@ -3,6 +3,7 @@ package com.rbkmoney.cm.dudoser;
 import com.rbkmoney.cm.dudoser.config.TelegramConfig;
 import com.rbkmoney.cm.dudoser.config.properties.TelegramProperties;
 import com.rbkmoney.cm.dudoser.telegram.client.TelegramApi;
+import com.rbkmoney.cm.dudoser.telegram.client.TelegramClientException;
 import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramMessage;
 import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramSendDocumentRequest;
 import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramSendMessageRequest;
@@ -22,6 +23,7 @@ import java.io.IOException;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 public class TelegramApiTest extends AbstractIntegrationTest {
@@ -72,4 +74,12 @@ public class TelegramApiTest extends AbstractIntegrationTest {
         Assert.assertEquals(caption, message.getCaption());
     }
 
+    @Test(expected = TelegramClientException.class)
+    public void sendDocumentErrorTest() {
+        mockServer.expect(requestTo(TelegramConfig.BASE_URL + telegramProperties.getToken() + "/sendDocument"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess(TestHelper.getClassPathResource("telegram/client/errorResponse.json", getClass()), MediaType.APPLICATION_JSON));
+        TelegramMessage message = telegramApi.sendDocument(
+                new TelegramSendDocumentRequest("testChatId", "captionText", new byte[]{}), "test.dat");
+    }
 }

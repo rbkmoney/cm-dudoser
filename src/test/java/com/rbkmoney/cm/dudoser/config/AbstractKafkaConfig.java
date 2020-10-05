@@ -1,22 +1,35 @@
 package com.rbkmoney.cm.dudoser.config;
 
 import com.rbkmoney.cm.dudoser.CMDudoserApplication;
+import com.rbkmoney.damsel.claim_management.Event;
 import com.rbkmoney.easyway.*;
+import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.ClassRule;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.FailureDetectingExternalResource;
+import org.testcontainers.containers.KafkaContainer;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
+import static io.github.benas.randombeans.api.EnhancedRandom.random;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @RunWith(SpringRunner.class)
@@ -26,51 +39,48 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Slf4j
 public abstract class AbstractKafkaConfig extends AbstractTestUtils {
 
-    private static TestContainers testContainers = TestContainersBuilder.builderWithTestContainers(TestContainersParameters::new)
-            .addKafkaTestContainer()
-            .build();
+    private static final String CONFLUENT_PLATFORM_VERSION = "5.0.1";
+
+    @Value("${kafka.topics.claim-event-sink.id}")
+    public String topic;
 
     @ClassRule
-    public static final FailureDetectingExternalResource resource = new FailureDetectingExternalResource() {
-
-        @Override
-        protected void starting(Description description) {
-            testContainers.startTestContainers();
-        }
-
-        @Override
-        protected void failed(Throwable e, Description description) {
-            log.warn("Test Container running was failed ", e);
-        }
-
-        @Override
-        protected void finished(Description description) {
-            testContainers.stopTestContainers();
-        }
-    };
+    public static KafkaContainer kafka = new KafkaContainer(CONFLUENT_PLATFORM_VERSION).withEmbeddedZookeeper();
 
     public static class Initializer extends ConfigFileApplicationContextInitializer {
 
         @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            super.initialize(configurableApplicationContext);
             TestPropertyValues.of(
-                    testContainers.getEnvironmentProperties(
-                            getEnvironmentPropertiesConsumer()
-                    )
+                    "kafka.bootstrap.servers=" + kafka.getBootstrapServers(),
+                    "kafka.topics.claim-event-sink.enabled=true",
+                    "kafka.error-handler.sleep-time-seconds=1"
             )
-                    .applyTo(configurableApplicationContext);
+                    .applyTo(configurableApplicationContext.getEnvironment());
+            kafka.start();
         }
     }
 
-    private static Consumer<EnvironmentProperties> getEnvironmentPropertiesConsumer() {
-        return environmentProperties -> {
-            environmentProperties.put("kafka.topics.claim-event-sink.enabled", "true");
-            environmentProperties.put("kafka.error-handler.sleep-time-seconds", "1");
-            testContainers.getKafkaTestContainer().ifPresent(
-                    c -> environmentProperties.put("kafka.bootstrap.servers", c.getBootstrapServers())
-            );
-
-        };
+    protected <T> Producer<String, T> createKafkaProducer() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
+        props.put(ProducerConfig.CLIENT_ID_CONFIG, "client_id");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, new ThriftSerializer<Event>().getClass().getName());
+        return new KafkaProducer<>(props);
     }
+
+    protected void produceMessageToEventSink(Event event) {
+        try (Producer<String, Event> producer = createKafkaProducer()) {
+            ProducerRecord<String, Event> producerRecord = new ProducerRecord<>(
+                    topic,
+                    random(String.class),
+                    event);
+            producer.send(producerRecord).get();
+            log.info("produceMessageToEventSink() sinkEvent: {}", event);
+        } catch (Exception e) {
+            log.error("Error when produceMessageToEventSink e:", e);
+        }
+    }
+
 }

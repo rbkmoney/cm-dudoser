@@ -74,8 +74,10 @@ public class ClaimTelegramHandler implements ClaimHandler {
         if (change.isSetCreated()) {
             List<Modification> changeset = change.getCreated().getChangeset();
             if (ClaimHelper.containsDocumentModifications(change)) {
+                log.info("Handle document modification. claimId={} partyId={} chatId={}", claimId, partyId, chatId);
                 handleDocumentModification(claimId, partyId, chatId, changeset);
             } else {
+                log.info("Handle new claim. claimId={} partyId={} chatId={}", claimId, partyId, chatId);
                 ClaimData claimData = ClaimData.builder()
                         .id(String.valueOf(claimId))
                         .partyId(partyId)
@@ -88,8 +90,10 @@ public class ClaimTelegramHandler implements ClaimHandler {
         } else if (change.isSetUpdated()) {
             List<Modification> changeset = change.getUpdated().getChangeset();
             if (ClaimHelper.containsCommentModifications(change)) {
+                log.info("Handle comment modification claim. claimId={} partyId={} chatId={}", claimId, partyId, chatId);
                 handleCommentModification(claimId, partyId, chatId, changeset);
             } else if (ClaimHelper.containsFileModifications(change)) {
+                log.info("Handle file modification claim. claimId={} partyId={} chatId={}", claimId, partyId, chatId);
                 handleFileModification(claimId, partyId, chatId, changeset);
             }
         }

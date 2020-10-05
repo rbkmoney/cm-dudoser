@@ -2,7 +2,9 @@ package com.rbkmoney.cm.dudoser.telegram.client.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@Getter
 @EqualsAndHashCode(callSuper = true)
 public class TelegramSendMessageRequest extends TelegramRequest {
 
