@@ -5,6 +5,7 @@ import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramMessage;
 import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramResponse;
 import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramSendDocumentRequest;
 import com.rbkmoney.cm.dudoser.telegram.client.model.TelegramSendMessageRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
@@ -14,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 public class TelegramApi {
 
@@ -28,6 +30,7 @@ public class TelegramApi {
     }
 
     public TelegramMessage sendMessage(TelegramSendMessageRequest sendMessageRequest) {
+        log.info("Send telegram message. ChatId={} Text={}", sendMessageRequest.getChatId(), sendMessageRequest.getText());
         ResponseEntity<TelegramResponse<TelegramMessage>> response = telegramRestTemplate.exchange(
                 "/sendMessage",
                 HttpMethod.POST,
@@ -36,10 +39,11 @@ public class TelegramApi {
                 }
         );
 
-        return response.getBody().getResult();
+        return extractResponse(response);
     }
 
     public TelegramMessage sendDocument(TelegramSendDocumentRequest sendDocumentRequest, String fileName) {
+        log.info("Send telegram document. ChatId={} Filename={}", sendDocumentRequest.getChatId(), fileName);
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.add("chat_id", sendDocumentRequest.getChatId());
         formData.add("document", new ByteArrayResource(sendDocumentRequest.getDocument()) {
@@ -67,7 +71,15 @@ public class TelegramApi {
                 }
         );
 
-        return response.getBody().getResult();
+        return extractResponse(response);
+    }
+
+    private <R> R extractResponse(ResponseEntity<TelegramResponse<R>> response) {
+        TelegramResponse<R> body = response.getBody();
+        if (!body.getOk()) {
+            throw new TelegramClientException(body.getErrorCode() + " - " + body.getDescription());
+        }
+        return body.getResult();
     }
 
 }
