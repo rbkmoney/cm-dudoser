@@ -187,6 +187,13 @@
             <version>4.0.3</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.benas</groupId>
+            <artifactId>random-beans</artifactId>
+            <version>3.9.0</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 
