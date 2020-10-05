@@ -4,7 +4,7 @@ import com.rbkmoney.cm.dudoser.config.properties.KafkaConsumerProperties;
 import com.rbkmoney.cm.dudoser.config.properties.KafkaSslProperties;
 import com.rbkmoney.cm.dudoser.deserializer.ClaimEventSinkDeserializer;
 import com.rbkmoney.damsel.claim_management.Event;
-import com.rbkmoney.kafka.common.exception.handler.SeekToCurrentWithSleepErrorHandler;
+import com.rbkmoney.cm.dudoser.kafka.SeekToCurrentWithSleepErrorHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.CommonClientConfigs;
