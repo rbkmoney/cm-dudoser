@@ -67,7 +67,7 @@ public class ConsumerTests extends AbstractKafkaConfig {
             )
                     .get();
 
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.SECONDS.sleep(7);
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }
