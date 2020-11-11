@@ -72,6 +72,9 @@ telegram:
   enable: true
   token: "2516358543:cFEghkRsQxGthdEc14Kslx9m1kPDqDcGlra"
   chatId: 1208034847
+  files:
+    send:
+      enable: false
 claimmanagement:
   client:
     adapter:
