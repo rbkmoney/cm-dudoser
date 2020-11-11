@@ -1,0 +1,2 @@
+## @vtlvariable name="claimManagementData" type="com.rbkmoney.cm.dudoser.domain.ClaimData"
+Новый файл "$!claimManagementData.comment" в заявке <a href="http://iddqd.rbk.money/claim-mgt/party/$!claimManagementData.partyId/claim/$!claimManagementData.id">$!claimManagementData.id</a>
