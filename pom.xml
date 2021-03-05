@@ -6,41 +6,41 @@
     <parent>
         <groupId>com.rbkmoney</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.4.RELEASE</version>
+        <version>2.3.8</version>
     </parent>
 
     <artifactId>cm-dudoser</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>cm-dudoser</name>
     <description>claim-management-dudoser</description>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
         <server.port>8022</server.port>
-        <exposed.ports>${server.port}</exposed.ports>
-        <dockerfile.base.service.tag>57e26d8ee999d7b0b50248c22afc63e6f926d276</dockerfile.base.service.tag>
+        <management.port>8023</management.port>
+        <exposed.ports>${server.port} ${management.port}</exposed.ports>
+        <dockerfile.base.service.tag>c0612d6052ac049496b72a23a04acb142035f249</dockerfile.base.service.tag>
         <dockerfile.registry>${env.REGISTRY}</dockerfile.registry>
         <shared.resources.version>0.3.8</shared.resources.version>
-        <damsel.version>1.449-e2de943</damsel.version>
+        <damsel.version>1.473-093c982</damsel.version>
         <woody.version>1.1.15</woody.version>
         <kafka.common.lib.version>0.1.7</kafka.common.lib.version>
         <custom-actuator-endpoints.version>0.0.4</custom-actuator-endpoints.version>
-        <geck.version>0.6.8</geck.version>
+        <geck.version>0.6.11</geck.version>
         <messages.proto.version>1.10-391d225</messages.proto.version>
         <file.storage.proto.version>1.24-a77c0c4</file.storage.proto.version>
         <questionary.proto.version>1.22-d638e44</questionary.proto.version>
+        <testcontainers.version>1.14.3</testcontainers.version>
     </properties>
 
     <dependencies>
         <!--rbkmoney-->
         <dependency>
             <groupId>com.rbkmoney</groupId>
-            <artifactId>spring-boot-starter-metrics-statsd</artifactId>
-            <version>1.1.2</version>
+            <artifactId>custom-metrics-spring-boot-starter</artifactId>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>com.rbkmoney.woody</groupId>
@@ -114,6 +114,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
 
         <!--third party-->
         <dependency>
@@ -124,7 +132,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -138,10 +146,6 @@
             <version>${kafka.common.lib.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.2</version>
@@ -151,19 +155,18 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>2.3.4.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>1.15.0</version>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>kafka</artifactId>
-            <version>1.15.0</version>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

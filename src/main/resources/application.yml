@@ -1,25 +1,41 @@
 server:
   port: @server.port@
+
 management:
   security:
     flag: false
+  server:
+    port: @management.port@
   metrics:
     export:
       statsd:
-        flavor: ETSY
+        flavor: etsy
+        enabled: false
+      prometheus:
         enabled: false
   endpoint:
     health:
-      show-details: ALWAYS
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
 spring:
   application:
     name: @project.name@
   output:
     ansi:
       enabled: ALWAYS
+
 info:
   version: @project.version@
   stage: dev
+
 kafka:
   bootstrap:
     servers: "localhost:9092"
@@ -48,6 +64,7 @@ kafka:
   error-handler:
     sleep-time-seconds: 5
     maxAttempts: -1
+
 mail:
   host: mr1.linode.rbkmoney.net
   port: 25
@@ -68,6 +85,7 @@ mail:
     timeout: 30000
     starttls:
       enable: true
+
 telegram:
   enable: true
   token: "2516358543:cFEghkRsQxGthdEc14Kslx9m1kPDqDcGlra"
@@ -75,26 +93,31 @@ telegram:
   files:
     send:
       enable: false
+
 claimmanagement:
   client:
     adapter:
       url: http://localhost:8022/v1/claimmanagement
       networkTimeout: 30000
+
 conversations:
   client:
     adapter:
       url: http://localhost:8022/v1/conversations
       networkTimeout: 30000
+
 filestorage:
   client:
     adapter:
       url: http://localhost:8022/v1/filestorage
       networkTimeout: 30000
+
 questionary:
   client:
     adapter:
       url: http://localhost:8022/v1/questionary
       networkTimeout: 30000
+
 filter:
   test:
     party-ids: |
