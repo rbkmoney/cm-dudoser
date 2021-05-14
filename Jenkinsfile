@@ -9,7 +9,7 @@ build('cm-dudoser', 'java-maven') {
     }
 
     def serviceName = env.REPO_NAME
-    evn.skipDtrack = true
+    env.skipDtrack = true
     def mvnArgs = '-DjvmArgs="-Xmx256m"'
     def useJava11 = true
 
