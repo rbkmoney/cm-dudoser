@@ -9,7 +9,8 @@ build('cm-dudoser', 'java-maven') {
     }
 
     def serviceName = env.REPO_NAME
-    def mvnArgs = '-DjvmArgs="-Xmx256m" -DskipDtrack=true'
+    evn.skipDtrack = true
+    def mvnArgs = '-DjvmArgs="-Xmx256m"'
     def useJava11 = true
 
     javaServicePipeline(serviceName, useJava11, mvnArgs)
