@@ -32,7 +32,8 @@ public class RetryableSenderTest {
     @Test
     public void test() {
         AtomicInteger atomicInt = new AtomicInteger(0);
-        // на countRetries попытке мок корректно обработает вызов, в предыдущих попытках будет вынуждать сервис ретраить обработку ивента
+        // на countRetries попытке мок корректно обработает вызов,
+        // в предыдущих попытках будет вынуждать сервис ретраить обработку ивента
         when(mailSenderService.send(any())).thenAnswer(
                 invocation -> {
                     int increment = atomicInt.getAndIncrement();

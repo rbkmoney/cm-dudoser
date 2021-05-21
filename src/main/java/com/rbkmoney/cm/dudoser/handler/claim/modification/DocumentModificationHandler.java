@@ -47,7 +47,8 @@ public class DocumentModificationHandler implements ClaimModificationHandler {
             TemplateType templateType = null;
             ClaimDocumentData claimDocumentData = null;
             if (contractor.isSetIndividualEntity()) {
-                RussianIndividualEntity individualEntity = contractor.getIndividualEntity().getRussianIndividualEntity();
+                RussianIndividualEntity individualEntity =
+                        contractor.getIndividualEntity().getRussianIndividualEntity();
                 RegistrationInfo registrationInfo = individualEntity.getRegistrationInfo();
                 IndividualRegistrationInfo individualRegistrationInfo = registrationInfo != null
                         ? registrationInfo.getIndividualRegistrationInfo() : null;
@@ -57,31 +58,41 @@ public class DocumentModificationHandler implements ClaimModificationHandler {
                         .ownerId(questionary.getOwnerId())
                         .organization(individualEntity.getName())
                         .inn(individualEntity.getInn())
-                        .registrationDate(individualRegistrationInfo != null ? individualRegistrationInfo.getRegistrationDate() : null)
-                        .registrationAddress(individualRegistrationInfo != null ? individualRegistrationInfo.getRegistrationPlace() : null)
+                        .registrationDate(
+                                individualRegistrationInfo != null ? individualRegistrationInfo.getRegistrationDate() :
+                                        null)
+                        .registrationAddress(
+                                individualRegistrationInfo != null ? individualRegistrationInfo.getRegistrationPlace() :
+                                        null)
                         .headFio(russianPrivateEntity != null ? russianPrivateEntity.getFio() : null)
                         .build();
             } else if (contractor.isSetLegalEntity()) {
                 if (contractor.getLegalEntity().isSetRussianLegalEntity()) {
                     RussianLegalEntity russianLegalEntity = contractor.getLegalEntity().getRussianLegalEntity();
                     RegistrationInfo registrationInfo = russianLegalEntity.getRegistrationInfo();
-                    LegalRegistrationInfo legalRegistrationInfo = registrationInfo != null ? registrationInfo.getLegalRegistrationInfo() : null;
+                    LegalRegistrationInfo legalRegistrationInfo =
+                            registrationInfo != null ? registrationInfo.getLegalRegistrationInfo() : null;
                     LegalOwnerInfo legalOwnerInfo = russianLegalEntity.getLegalOwnerInfo();
-                    RussianPrivateEntity russianPrivateEntity = legalOwnerInfo != null ? legalOwnerInfo.getRussianPrivateEntity() : null;
+                    RussianPrivateEntity russianPrivateEntity =
+                            legalOwnerInfo != null ? legalOwnerInfo.getRussianPrivateEntity() : null;
                     templateType = TemplateType.TELEGRAM_LE_DOCUMENT_CHANGE;
                     claimDocumentData = ClaimDocumentData.builder()
                             .ownerId(questionary.getOwnerId())
                             .organization(russianLegalEntity.getName())
                             .inn(russianLegalEntity.getInn())
-                            .registrationDate(legalRegistrationInfo != null ? legalRegistrationInfo.getRegistrationDate() : null)
-                            .registrationAddress(legalRegistrationInfo != null ? legalRegistrationInfo.getRegistrationAddress() : null)
+                            .registrationDate(
+                                    legalRegistrationInfo != null ? legalRegistrationInfo.getRegistrationDate() : null)
+                            .registrationAddress(
+                                    legalRegistrationInfo != null ? legalRegistrationInfo.getRegistrationAddress() :
+                                            null)
                             .okato(russianLegalEntity.getOkatoCode())
                             .okpo(russianLegalEntity.getOkpoCode())
                             .headPosition(legalOwnerInfo != null ? legalOwnerInfo.getHeadPosition() : null)
                             .headFio(russianPrivateEntity != null ? russianPrivateEntity.getFio() : null)
                             .build();
                 } else if (contractor.getLegalEntity().isSetInternationalLegalEntity()) {
-                    InternationalLegalEntity internationalLegalEntity = contractor.getLegalEntity().getInternationalLegalEntity();
+                    InternationalLegalEntity internationalLegalEntity =
+                            contractor.getLegalEntity().getInternationalLegalEntity();
                     templateType = TemplateType.TELEGRAM_ILE_DOCUMENT_CHANGE;
                     claimDocumentData = ClaimDocumentData.builder()
                             .ownerId(questionary.getOwnerId())
@@ -102,7 +113,8 @@ public class DocumentModificationHandler implements ClaimModificationHandler {
                     .claimDocumentData(claimDocumentData)
                     .build();
             String template = templateService.buildTemplate(claimData);
-            TelegramSendMessageRequest telegramSendMessageRequest = new TelegramSendMessageRequest(chatId, template, TelegramParseMode.HTML);
+            TelegramSendMessageRequest telegramSendMessageRequest =
+                    new TelegramSendMessageRequest(chatId, template, TelegramParseMode.HTML);
             telegramApi.sendMessage(telegramSendMessageRequest);
         }
     }

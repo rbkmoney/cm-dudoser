@@ -12,7 +12,7 @@ public class TelegramSendMessageRequest extends TelegramRequest {
     private final String text;
 
     @JsonProperty("parse_mode")
-    private TelegramParseMode parseMode;
+    private final TelegramParseMode parseMode;
 
     public TelegramSendMessageRequest(String chatId, String text) {
         this(chatId, text, null, false);

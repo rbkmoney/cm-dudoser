@@ -36,7 +36,7 @@ public class StatusChangeMessageBuilderServiceImpl extends AbstractMessageBuilde
         return templateService.buildTemplate(claimData);
     }
 
-    private String convertStatus(ClaimStatus tClaimStatus) {
-        return valueOf(tClaimStatus.getSetField().getFieldName().toUpperCase()).getCyrillicValue();
+    private String convertStatus(ClaimStatus claimStatus) {
+        return valueOf(claimStatus.getSetField().getFieldName().toUpperCase()).getCyrillicValue();
     }
 }

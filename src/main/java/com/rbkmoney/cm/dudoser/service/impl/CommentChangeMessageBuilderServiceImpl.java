@@ -31,7 +31,8 @@ public class CommentChangeMessageBuilderServiceImpl extends AbstractMessageBuild
     protected String getContent(CommentModificationUnit commentModification, long claimId) {
         Conversation conversation = conversationService.getConversation(commentModification.getId());
 
-        com.rbkmoney.damsel.messages.Message message = conversation.getMessages().get(conversation.getMessages().size() - 1);
+        com.rbkmoney.damsel.messages.Message message =
+                conversation.getMessages().get(conversation.getMessages().size() - 1);
 
         ClaimData claimData = ClaimData.builder()
                 .templateType(TemplateType.COMMENT)

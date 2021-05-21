@@ -31,7 +31,9 @@ public class ClaimService {
                 .orElse(null);
 
         if (emailTo == null) {
-            throw new NotFoundException(String.format("ExternalUser info from Claim can not be null, partyId=%s, claimId=%s", partyId, claimId));
+            throw new NotFoundException(
+                    String.format("ExternalUser info from Claim can not be null, partyId=%s, claimId=%s", partyId,
+                            claimId));
         }
 
         return emailTo;
@@ -45,19 +47,24 @@ public class ClaimService {
                     () -> {
                         ContextUtils.setCustomMetadataValue(UserIdentityIdExtensionKit.KEY, userInfo.getId());
                         ContextUtils.setCustomMetadataValue(UserIdentityEmailExtensionKit.KEY, userInfo.getEmail());
-                        ContextUtils.setCustomMetadataValue(UserIdentityUsernameExtensionKit.KEY, userInfo.getUsername());
+                        ContextUtils
+                                .setCustomMetadataValue(UserIdentityUsernameExtensionKit.KEY, userInfo.getUsername());
                         ContextUtils.setCustomMetadataValue(UserIdentityRealmExtensionKit.KEY, getType(userInfo));
                         return claimManagementClient.getClaim(partyId, claimId);
                     }
             ).call();
 
             if (claim == null || claim.getChangeset() == null || claim.getChangeset().isEmpty()) {
-                throw new NotFoundException(String.format("Changeset from Claim can not be null, partyId=%s, claimId=%s", partyId, claimId));
+                throw new NotFoundException(
+                        String.format("Changeset from Claim can not be null, partyId=%s, claimId=%s", partyId,
+                                claimId));
             }
 
             return claim;
         } catch (TException ex) {
-            throw new ThriftClientException(String.format("Failed to get Claim from thrift client, partyId=%s, claimId=%s", partyId, claimId), ex);
+            throw new ThriftClientException(
+                    String.format("Failed to get Claim from thrift client, partyId=%s, claimId=%s", partyId, claimId),
+                    ex);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

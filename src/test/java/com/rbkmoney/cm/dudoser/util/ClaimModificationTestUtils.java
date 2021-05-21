@@ -20,16 +20,16 @@ public final class ClaimModificationTestUtils {
         return Change.created(changed);
     }
 
+    public static Change getClaimCreated(Modification... modifications) {
+        ClaimCreated changed = random(ClaimCreated.class, "changeset");
+        changed.setChangeset(List.of(modifications));
+        return Change.created(changed);
+    }
+
     public static Change getClaimTestPartyCreated() {
         ClaimCreated changed = random(ClaimCreated.class, "changeset");
         changed.setChangeset(List.of(getClaimModification(getCommentModification())));
         changed.setPartyId("test");
-        return Change.created(changed);
-    }
-
-    public static Change getClaimCreated(Modification... modifications) {
-        ClaimCreated changed = random(ClaimCreated.class, "changeset");
-        changed.setChangeset(List.of(modifications));
         return Change.created(changed);
     }
 
@@ -45,32 +45,12 @@ public final class ClaimModificationTestUtils {
         return Change.status_changed(changed);
     }
 
-    private Claim getClaim(String email) {
-        ModificationUnit modificationUnit = getModificationUnit(getExternalUser(), getCommentModification());
-        modificationUnit.getUserInfo().setEmail(email);
-        List<ModificationUnit> changeset = List.of(
-                getModificationUnit(getInternalUser(), getCommentModification()),
-                modificationUnit,
-                getModificationUnit(getInternalUser(), getCommentModification()),
-                getModificationUnit(getInternalUser(), getStatusModification(getClaimPending())),
-                getModificationUnit(getExternalUser(), getFileModification())
-        );
-        return getClaim(getClaimPending(), changeset);
-    }
-
     public static Conversation getConversation() {
         List<Message> messages = randomListOf(5, Message.class);
 
         Conversation conversation = random(Conversation.class, "messages");
         conversation.setMessages(messages);
         return conversation;
-    }
-
-    private Claim getClaim(ClaimStatus status, List<ModificationUnit> changeset) {
-        Claim claim = random(Claim.class, "status", "changeset", "metadata");
-        claim.setStatus(status);
-        claim.setChangeset(changeset);
-        return claim;
     }
 
     public static ClaimModification getCommentModification() {
@@ -92,13 +72,6 @@ public final class ClaimModificationTestUtils {
         modificationUnit.setId("asd");
         modificationUnit.setModification(FileModification.creation(new FileCreated()));
         return ClaimModification.file_modification(modificationUnit);
-    }
-
-    private ModificationUnit getModificationUnit(UserType userType, ClaimModification claimModification) {
-        ModificationUnit modification = random(ModificationUnit.class, "modification", "user_info");
-        modification.setUserInfo(getUserInfo(userType));
-        modification.setModification(getClaimModification(claimModification));
-        return modification;
     }
 
     public static ClaimModification getDocumentModification() {
@@ -136,6 +109,33 @@ public final class ClaimModificationTestUtils {
 
     public static UserType getInternalUser() {
         return UserType.internal_user(new InternalUser());
+    }
+
+    private Claim getClaim(String email) {
+        ModificationUnit modificationUnit = getModificationUnit(getExternalUser(), getCommentModification());
+        modificationUnit.getUserInfo().setEmail(email);
+        List<ModificationUnit> changeset = List.of(
+                getModificationUnit(getInternalUser(), getCommentModification()),
+                modificationUnit,
+                getModificationUnit(getInternalUser(), getCommentModification()),
+                getModificationUnit(getInternalUser(), getStatusModification(getClaimPending())),
+                getModificationUnit(getExternalUser(), getFileModification())
+        );
+        return getClaim(getClaimPending(), changeset);
+    }
+
+    private Claim getClaim(ClaimStatus status, List<ModificationUnit> changeset) {
+        Claim claim = random(Claim.class, "status", "changeset", "metadata");
+        claim.setStatus(status);
+        claim.setChangeset(changeset);
+        return claim;
+    }
+
+    private ModificationUnit getModificationUnit(UserType userType, ClaimModification claimModification) {
+        ModificationUnit modification = random(ModificationUnit.class, "modification", "user_info");
+        modification.setUserInfo(getUserInfo(userType));
+        modification.setModification(getClaimModification(claimModification));
+        return modification;
     }
 
 }

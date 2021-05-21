@@ -20,9 +20,12 @@ public abstract class AbstractMessageBuilderService<T> implements MessageBuilder
         return build(emailFrom, emailTo, getContent(change, claimId), subject, partyId, claimId);
     }
 
-    protected abstract String getContent(T change, long claimId);
-
-    private Message build(String emailFrom, String emailTo, String content, String subject, String partyId, long claimId) {
+    private Message build(String emailFrom,
+                          String emailTo,
+                          String content,
+                          String subject,
+                          String partyId,
+                          long claimId) {
         return Message.builder()
                 .from(emailFrom)
                 .to(emailTo)
@@ -32,4 +35,7 @@ public abstract class AbstractMessageBuilderService<T> implements MessageBuilder
                 .claimId(claimId)
                 .build();
     }
+
+    protected abstract String getContent(T change, long claimId);
+
 }

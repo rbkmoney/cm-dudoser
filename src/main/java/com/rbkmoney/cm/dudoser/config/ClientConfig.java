@@ -23,8 +23,9 @@ import java.util.Arrays;
 public class ClientConfig {
 
     @Bean
-    public ClaimManagementSrv.Iface claimManagementClient(@Value("${claimmanagement.client.adapter.url}") Resource resource,
-                                                          @Value("${claimmanagement.client.adapter.networkTimeout}") int timeout) throws IOException {
+    public ClaimManagementSrv.Iface claimManagementClient(
+            @Value("${claimmanagement.client.adapter.url}") Resource resource,
+            @Value("${claimmanagement.client.adapter.networkTimeout}") int timeout) throws IOException {
         return new THSpawnClientBuilder()
                 .withMetaExtensions(
                         Arrays.asList(
@@ -41,7 +42,8 @@ public class ClientConfig {
 
     @Bean
     public MessageServiceSrv.Iface messageServiceClient(@Value("${conversations.client.adapter.url}") Resource resource,
-                                                        @Value("${conversations.client.adapter.networkTimeout}") int timeout) throws IOException {
+                                                        @Value("${conversations.client.adapter.networkTimeout}")
+                                                                int timeout) throws IOException {
         return new THSpawnClientBuilder()
                 .withAddress(resource.getURI())
                 .withNetworkTimeout(timeout)
@@ -50,7 +52,8 @@ public class ClientConfig {
 
     @Bean
     public FileStorageSrv.Iface fileStorageClient(@Value("${filestorage.client.adapter.url}") Resource resource,
-                                                  @Value("${filestorage.client.adapter.networkTimeout}") int timeout) throws IOException {
+                                                  @Value("${filestorage.client.adapter.networkTimeout}") int timeout)
+            throws IOException {
         return new THSpawnClientBuilder()
                 .withAddress(resource.getURI())
                 .withNetworkTimeout(timeout)
@@ -59,7 +62,8 @@ public class ClientConfig {
 
     @Bean
     public QuestionaryManagerSrv.Iface questionaryClient(@Value("${questionary.client.adapter.url}") Resource resource,
-                                                         @Value("${questionary.client.adapter.networkTimeout}") int timeout) throws IOException {
+                                                         @Value("${questionary.client.adapter.networkTimeout}")
+                                                                 int timeout) throws IOException {
         return new THSpawnClientBuilder()
                 .withAddress(resource.getURI())
                 .withNetworkTimeout(timeout)

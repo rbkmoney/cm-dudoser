@@ -19,7 +19,8 @@ public class TelegramConfig {
 
     @Bean
     public RestTemplate telegramRestTemplate(TelegramProperties telegramProperties,
-                                             ObjectMapper objectMapper) throws NoSuchAlgorithmException, KeyManagementException {
+                                             ObjectMapper objectMapper)
+            throws NoSuchAlgorithmException, KeyManagementException {
         return new RestTemplateBuilder()
                 .rootUri(BASE_URL + telegramProperties.getToken())
                 .errorHandler(new TelegramErrorHandler(objectMapper))

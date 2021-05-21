@@ -24,15 +24,19 @@ public class ConversationService {
         try {
             log.info("Trying to get Conversation from thrift client, conversationId={}", conversationId);
 
-            GetConversationResponse response = messageServiceClient.getConversations(List.of(conversationId), new ConversationFilter());
+            GetConversationResponse response =
+                    messageServiceClient.getConversations(List.of(conversationId), new ConversationFilter());
 
             if (response == null || response.getConversations() == null || response.getConversations().size() != 1) {
-                throw new NotFoundException(String.format("Conversation's size must be = 1, conversationId=%s", conversationId));
+                throw new NotFoundException(
+                        String.format("Conversation's size must be = 1, conversationId=%s", conversationId));
             }
 
             return response.getConversations().get(0);
         } catch (TException ex) {
-            throw new ThriftClientException(String.format("Failed to get Conversation from thrift client, conversationId=%s", conversationId), ex);
+            throw new ThriftClientException(
+                    String.format("Failed to get Conversation from thrift client, conversationId=%s", conversationId),
+                    ex);
         }
     }
 }

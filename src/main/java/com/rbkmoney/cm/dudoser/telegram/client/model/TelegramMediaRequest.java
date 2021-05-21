@@ -9,12 +9,13 @@ import lombok.Getter;
 public class TelegramMediaRequest extends TelegramRequest {
 
     @JsonProperty("caption")
-    private String caption;
+    private final String caption;
 
     @JsonProperty("parse_mode")
-    private TelegramParseMode parseMode;
+    private final TelegramParseMode parseMode;
 
-    public TelegramMediaRequest(String chatId, Boolean disableNotification, String caption, TelegramParseMode parseMode) {
+    public TelegramMediaRequest(String chatId, Boolean disableNotification, String caption,
+                                TelegramParseMode parseMode) {
         super(chatId, disableNotification);
         this.caption = caption;
         this.parseMode = parseMode;

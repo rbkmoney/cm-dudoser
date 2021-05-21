@@ -45,8 +45,9 @@ public class CommentModificationHandler implements ClaimModificationHandler {
                     .templateType(TemplateType.TELEGRAM_COMMENT_CHANGE)
                     .comment(message.getText())
                     .build();
-            String template  = templateService.buildTemplate(claimData);
-            TelegramSendMessageRequest telegramRequest = new TelegramSendMessageRequest(chatId, template, TelegramParseMode.HTML);
+            String template = templateService.buildTemplate(claimData);
+            TelegramSendMessageRequest telegramRequest =
+                    new TelegramSendMessageRequest(chatId, template, TelegramParseMode.HTML);
             telegramApi.sendMessage(telegramRequest);
         }
     }

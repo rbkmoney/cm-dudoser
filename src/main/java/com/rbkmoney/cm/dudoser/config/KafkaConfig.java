@@ -3,8 +3,8 @@ package com.rbkmoney.cm.dudoser.config;
 import com.rbkmoney.cm.dudoser.config.properties.KafkaConsumerProperties;
 import com.rbkmoney.cm.dudoser.config.properties.KafkaSslProperties;
 import com.rbkmoney.cm.dudoser.deserializer.ClaimEventSinkDeserializer;
-import com.rbkmoney.damsel.claim_management.Event;
 import com.rbkmoney.cm.dudoser.kafka.SeekToCurrentWithSleepErrorHandler;
+import com.rbkmoney.damsel.claim_management.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -69,9 +69,12 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> kafkaListenerContainerFactory(ConsumerFactory<String, Event> consumerFactory,
-                                                                                                                          KafkaConsumerProperties kafkaConsumerProperties) {
-        ConcurrentKafkaListenerContainerFactory<String, Event> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    @SuppressWarnings("LineLength")
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Event>> kafkaListenerContainerFactory(
+            ConsumerFactory<String, Event> consumerFactory,
+            KafkaConsumerProperties kafkaConsumerProperties) {
+        ConcurrentKafkaListenerContainerFactory<String, Event> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.getContainerProperties().setAckOnError(false);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
@@ -83,11 +86,13 @@ public class KafkaConfig {
     private void configureSsl(Map<String, Object> props, KafkaSslProperties kafkaSslProperties) {
         if (kafkaSslProperties.isEnabled()) {
             props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name());
-            props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, new File(kafkaSslProperties.getTrustStoreLocation()).getAbsolutePath());
+            props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+                    new File(kafkaSslProperties.getTrustStoreLocation()).getAbsolutePath());
             props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, kafkaSslProperties.getTrustStorePassword());
             props.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, kafkaSslProperties.getKeyStoreType());
             props.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, kafkaSslProperties.getTrustStoreType());
-            props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, new File(kafkaSslProperties.getKeyStoreLocation()).getAbsolutePath());
+            props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
+                    new File(kafkaSslProperties.getKeyStoreLocation()).getAbsolutePath());
             props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, kafkaSslProperties.getKeyStorePassword());
             props.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, kafkaSslProperties.getKeyPassword());
         }

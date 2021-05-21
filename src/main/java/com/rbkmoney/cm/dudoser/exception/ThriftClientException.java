@@ -17,7 +17,8 @@ public class ThriftClientException extends RuntimeException {
         super(cause);
     }
 
-    public ThriftClientException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public ThriftClientException(String message, Throwable cause, boolean enableSuppression,
+                                 boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

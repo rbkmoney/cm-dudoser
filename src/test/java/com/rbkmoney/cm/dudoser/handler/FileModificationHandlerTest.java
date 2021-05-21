@@ -44,28 +44,23 @@ import static org.mockito.Mockito.*;
 @TestPropertySource(properties = {"telegram.files.send.enable=false", "telegram.chatId=1208034847"})
 public class FileModificationHandlerTest {
 
+    private static final String TEST_FILENAME = "testFileName";
     @Autowired
     private ClaimModificationHandler fileModificationHandler;
-
     @Autowired
     private TemplateService templateService;
-
     @MockBean
     private FileStorageService fileStorageService;
-
     @MockBean
     private FileDownloadService fileDownloadService;
-
     @MockBean
     private TelegramApi telegramApi;
-
-    private static final String TEST_FILENAME = "testFileName";
 
     @Before
     public void setUp() {
         when(fileStorageService.getFileDownloadUrl(anyString(), any(Instant.class)))
                 .thenReturn("testUrl");
-        FileInfo fileInfo = new FileInfo(TEST_FILENAME, new byte[]{1, 2 ,3});
+        FileInfo fileInfo = new FileInfo(TEST_FILENAME, new byte[] {1, 2, 3});
         when(fileDownloadService.requestFile(anyString(), anyString())).thenReturn(fileInfo);
     }
 
@@ -74,7 +69,8 @@ public class FileModificationHandlerTest {
         Change claimUpdated = getClaimUpdated(
                 getClaimModification(getFileModification())
         );
-        fileModificationHandler.handleModification(random(Long.class), random(String.class), claimUpdated.getUpdated().getChangeset());
+        fileModificationHandler
+                .handleModification(random(Long.class), random(String.class), claimUpdated.getUpdated().getChangeset());
         verify(fileStorageService, only()).getFileDownloadUrl(anyString(), any(Instant.class));
         verify(fileDownloadService, only()).requestFile(anyString(), anyString());
         verify(telegramApi, only()).sendMessage(any(TelegramSendMessageRequest.class));
