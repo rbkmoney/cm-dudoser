@@ -38,7 +38,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @TestPropertySource(properties = "telegram.files.send.enable=true")
 public class ListenerTest {
 
-    private final static String EMAIL = "no-reply@rbk.com";
+    private static final String EMAIL = "no-reply@rbk.com";
 
     @MockBean
     private RetryableSenderService retryableSenderService;
@@ -66,7 +66,6 @@ public class ListenerTest {
 
     @MockBean
     private TelegramApi telegramApi;
-
 
     private ClaimEventSinkListener listener;
 
