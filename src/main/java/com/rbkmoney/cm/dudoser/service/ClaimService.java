@@ -32,8 +32,8 @@ public class ClaimService {
 
         if (emailTo == null) {
             throw new NotFoundException(
-                    String.format("ExternalUser info from Claim can not be null, partyId=%s, claimId=%s", partyId,
-                            claimId));
+                    String.format("ExternalUser info from Claim can not be null, partyId=%s, claimId=%s",
+                            partyId, claimId));
         }
 
         return emailTo;
@@ -56,8 +56,8 @@ public class ClaimService {
 
             if (claim == null || claim.getChangeset() == null || claim.getChangeset().isEmpty()) {
                 throw new NotFoundException(
-                        String.format("Changeset from Claim can not be null, partyId=%s, claimId=%s", partyId,
-                                claimId));
+                        String.format("Changeset from Claim can not be null, partyId=%s, claimId=%s",
+                                partyId, claimId));
             }
 
             return claim;

@@ -137,8 +137,13 @@ public class ConsumerTests extends AbstractKafkaConfig {
     }
 
     private ClaimStatusChanged getClaimStatusChanged() {
-        return new ClaimStatusChanged(UUID.randomUUID().toString(), 1, ClaimStatus.pending(new ClaimPending()), 1,
-                LocalDateTime.now().toString());
+        return new ClaimStatusChanged(
+                UUID.randomUUID().toString(),
+                1,
+                ClaimStatus.pending(new ClaimPending()),
+                1,
+                LocalDateTime.now().toString()
+        );
     }
 
 }

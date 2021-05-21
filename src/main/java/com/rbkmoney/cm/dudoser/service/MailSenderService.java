@@ -23,13 +23,10 @@ public class MailSenderService {
 
     public boolean send(Message message) {
         try {
-            log.info("Trying to send message to mail, partyId={}, claimId={}, email={}", message.getPartyId(),
-                    message.getClaimId(), message.getTo());
-
+            log.info("Trying to send message to mail, partyId={}, claimId={}, email={}",
+                    message.getPartyId(), message.getClaimId(), message.getTo());
             MimeMessage mimeMessage = getMimeMessage(message);
-
             mailSender.send(mimeMessage);
-
             return true;
         } catch (MessagingException | MailException ex) {
             throw new MailSendException(
@@ -40,7 +37,6 @@ public class MailSenderService {
 
     private MimeMessage getMimeMessage(Message message) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name());
         helper.setFrom(message.getFrom());
         helper.setTo(message.getTo());

@@ -27,7 +27,8 @@ public class SeekToCurrentWithSleepErrorHandler extends SeekToCurrentErrorHandle
     }
 
     @Override
-    public void handle(Exception thrownException, List<ConsumerRecord<?, ?>> records, Consumer<?, ?> consumer,
+    public void handle(Exception thrownException,
+                       List<ConsumerRecord<?, ?>> records, Consumer<?, ?> consumer,
                        MessageListenerContainer container) {
         log.error("Records commit failed", thrownException);
         this.sleepBeforeRetry();

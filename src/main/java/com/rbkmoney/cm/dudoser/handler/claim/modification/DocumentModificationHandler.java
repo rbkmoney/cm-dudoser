@@ -58,12 +58,12 @@ public class DocumentModificationHandler implements ClaimModificationHandler {
                         .ownerId(questionary.getOwnerId())
                         .organization(individualEntity.getName())
                         .inn(individualEntity.getInn())
-                        .registrationDate(
-                                individualRegistrationInfo != null ? individualRegistrationInfo.getRegistrationDate() :
-                                        null)
-                        .registrationAddress(
-                                individualRegistrationInfo != null ? individualRegistrationInfo.getRegistrationPlace() :
-                                        null)
+                        .registrationDate(individualRegistrationInfo != null
+                                ? individualRegistrationInfo.getRegistrationDate()
+                                : null)
+                        .registrationAddress(individualRegistrationInfo != null
+                                ? individualRegistrationInfo.getRegistrationPlace()
+                                : null)
                         .headFio(russianPrivateEntity != null ? russianPrivateEntity.getFio() : null)
                         .build();
             } else if (contractor.isSetLegalEntity()) {
@@ -80,11 +80,12 @@ public class DocumentModificationHandler implements ClaimModificationHandler {
                             .ownerId(questionary.getOwnerId())
                             .organization(russianLegalEntity.getName())
                             .inn(russianLegalEntity.getInn())
-                            .registrationDate(
-                                    legalRegistrationInfo != null ? legalRegistrationInfo.getRegistrationDate() : null)
-                            .registrationAddress(
-                                    legalRegistrationInfo != null ? legalRegistrationInfo.getRegistrationAddress() :
-                                            null)
+                            .registrationDate(legalRegistrationInfo != null
+                                    ? legalRegistrationInfo.getRegistrationDate()
+                                    : null)
+                            .registrationAddress(legalRegistrationInfo != null
+                                    ? legalRegistrationInfo.getRegistrationAddress()
+                                    : null)
                             .okato(russianLegalEntity.getOkatoCode())
                             .okpo(russianLegalEntity.getOkpoCode())
                             .headPosition(legalOwnerInfo != null ? legalOwnerInfo.getHeadPosition() : null)

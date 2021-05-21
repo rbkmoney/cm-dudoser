@@ -9,10 +9,10 @@ import lombok.Getter;
 public class TelegramSendMessageRequest extends TelegramRequest {
 
     @JsonProperty("text")
-    private final String text;
+    private String text;
 
     @JsonProperty("parse_mode")
-    private final TelegramParseMode parseMode;
+    private TelegramParseMode parseMode;
 
     public TelegramSendMessageRequest(String chatId, String text) {
         this(chatId, text, null, false);

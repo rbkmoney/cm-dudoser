@@ -45,14 +45,19 @@ import static org.mockito.Mockito.*;
 public class FileModificationHandlerTest {
 
     private static final String TEST_FILENAME = "testFileName";
+
     @Autowired
     private ClaimModificationHandler fileModificationHandler;
+
     @Autowired
     private TemplateService templateService;
+
     @MockBean
     private FileStorageService fileStorageService;
+
     @MockBean
     private FileDownloadService fileDownloadService;
+
     @MockBean
     private TelegramApi telegramApi;
 
