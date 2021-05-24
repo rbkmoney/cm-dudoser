@@ -14,7 +14,7 @@ public class ClaimHandlerChain {
     }
 
     public void doFilter(Event event) {
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             ClaimHandler claimHandler = iterator.next();
             claimHandler.handle(event, this);
         }

@@ -34,7 +34,8 @@ public class ClaimCreationHandler implements ClaimModificationHandler {
                 .templateType(TemplateType.TELEGRAM_NEW_CLAIM)
                 .build();
         String template = templateService.buildTemplate(claimData);
-        TelegramSendMessageRequest messageRequest = new TelegramSendMessageRequest(chatId, template, TelegramParseMode.HTML);
+        TelegramSendMessageRequest messageRequest =
+                new TelegramSendMessageRequest(chatId, template, TelegramParseMode.HTML);
         telegramApi.sendMessage(messageRequest);
     }
 

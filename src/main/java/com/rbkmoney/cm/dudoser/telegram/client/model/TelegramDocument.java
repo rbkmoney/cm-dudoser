@@ -7,7 +7,7 @@ import lombok.Data;
 public class TelegramDocument {
 
     @JsonProperty("file_id")
-   private String fileId;
+    private String fileId;
 
     @JsonProperty("file_unique_id")
     private String fileUniqueId;

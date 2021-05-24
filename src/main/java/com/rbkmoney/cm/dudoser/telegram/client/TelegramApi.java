@@ -30,7 +30,8 @@ public class TelegramApi {
     }
 
     public TelegramMessage sendMessage(TelegramSendMessageRequest sendMessageRequest) {
-        log.info("Send telegram message. ChatId={} Text={}", sendMessageRequest.getChatId(), sendMessageRequest.getText());
+        log.info("Send telegram message. ChatId={} Text={}", sendMessageRequest.getChatId(),
+                sendMessageRequest.getText());
         ResponseEntity<TelegramResponse<TelegramMessage>> response = telegramRestTemplate.exchange(
                 "/sendMessage",
                 HttpMethod.POST,

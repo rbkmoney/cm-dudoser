@@ -38,6 +38,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @TestPropertySource(properties = "telegram.files.send.enable=true")
 public class ListenerTest {
 
+    private static final String EMAIL = "no-reply@rbk.com";
+
     @MockBean
     private RetryableSenderService retryableSenderService;
 
@@ -65,17 +67,16 @@ public class ListenerTest {
     @MockBean
     private TelegramApi telegramApi;
 
-    private String email = "no-reply@rbk.com";
     private ClaimEventSinkListener listener;
 
     @Before
     public void setUp() {
         doNothing().when(retryableSenderService).sendToMail(any());
         when(conversationService.getConversation(anyString())).thenReturn(getConversation());
-        when(claimService.getEmailByClaim(any(), anyString(), anyLong())).thenReturn(email);
+        when(claimService.getEmailByClaim(any(), anyString(), anyLong())).thenReturn(EMAIL);
         when(fileStorageService.getFileDownloadUrl(anyString(), any(Instant.class)))
                 .thenReturn("testUrl");
-        FileInfo fileInfo = new FileInfo("testFileName", new byte[]{1, 2 ,3});
+        FileInfo fileInfo = new FileInfo("testFileName", new byte[] {1, 2, 3});
         when(fileDownloadService.requestFile(anyString(), anyString())).thenReturn(fileInfo);
         listener = new ClaimEventSinkListener(claimHandlerProcessor, testEventFilter);
     }
@@ -86,7 +87,8 @@ public class ListenerTest {
         sendMail(listener, getEvent(getExternalUser(), getClaimCreated()), 0);
         sendMail(listener, getEvent(getExternalUser(), getClaimTestPartyCreated()), 0);
         sendMail(listener, getEvent(getExternalUser(), getClaimStatus(getClaimPending())), 0);
-        sendMail(listener, getEvent(getExternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))), 0);
+        sendMail(listener, getEvent(getExternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))),
+                0);
     }
 
     @Test
@@ -99,9 +101,13 @@ public class ListenerTest {
         sendMail(listener, getEvent(getInternalUser(), getClaimStatus(getClaimPending())), 1);
 
         //modification типа НЕ comment пропускается
-        sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getFileModification()))), 0);
+        sendMail(listener,
+                getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getFileModification()))),
+                0);
 
-        sendMail(listener, getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))), 1);
+        sendMail(listener,
+                getEvent(getInternalUser(), getClaimUpdated(getClaimModification(getCommentModification()))),
+                1);
 
         Change claimUpdated = getClaimUpdated(
                 getClaimModification(getCommentModification()),
@@ -118,7 +124,8 @@ public class ListenerTest {
                 getClaimModification(getFileModification())
         ));
 
-        listener.handle(event, () -> {});
+        listener.handle(event, () -> {
+        });
 
         verify(fileStorageService, only()).getFileDownloadUrl(anyString(), any(Instant.class));
         verify(fileDownloadService, only()).requestFile(anyString(), anyString());
@@ -131,7 +138,8 @@ public class ListenerTest {
                 getClaimModification(getCommentModification())
         ));
 
-        listener.handle(event, () -> {});
+        listener.handle(event, () -> {
+        });
 
         verify(telegramApi, only()).sendMessage(any(TelegramSendMessageRequest.class));
     }
@@ -144,7 +152,8 @@ public class ListenerTest {
                 getClaimModification(getDocumentModification())
         ));
 
-        listener.handle(event, () -> {});
+        listener.handle(event, () -> {
+        });
 
         verify(telegramApi, only()).sendMessage(any(TelegramSendMessageRequest.class));
     }
@@ -153,7 +162,8 @@ public class ListenerTest {
     public void testNewClaimTelegramHandler() throws TException {
         Event event = getEvent(getExternalUser(), getClaimCreated());
 
-        listener.handle(event, () -> {});
+        listener.handle(event, () -> {
+        });
 
         verify(telegramApi, only()).sendMessage(any(TelegramSendMessageRequest.class));
     }
@@ -182,7 +192,6 @@ public class ListenerTest {
         individualEntity.setRussianIndividualEntity(new RussianIndividualEntity());
         questionaryData.setContractor(Contractor.individual_entity(individualEntity));
         questionary.setData(questionaryData);
-
         return questionary;
     }
 

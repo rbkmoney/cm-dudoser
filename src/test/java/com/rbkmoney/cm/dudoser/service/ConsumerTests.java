@@ -5,25 +5,15 @@ import com.rbkmoney.cm.dudoser.domain.Message;
 import com.rbkmoney.cm.dudoser.exception.MailSendException;
 import com.rbkmoney.cm.dudoser.exception.NotFoundException;
 import com.rbkmoney.damsel.claim_management.*;
-import com.rbkmoney.kafka.common.serialization.ThriftSerializer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.benas.randombeans.api.EnhancedRandom.random;
 import static org.awaitility.Awaitility.waitAtMost;
 import static org.mockito.Mockito.*;
 
@@ -45,7 +35,8 @@ public class ConsumerTests extends AbstractKafkaConfig {
         event.setOccuredAt(LocalDateTime.now().toString());
         event.setChange(Change.status_changed(claimStatusChanged));
 
-        when(statusMessageBuilder.build(eq(claimStatusChanged), any(), anyString(), anyLong())).thenThrow(NotFoundException.class);
+        when(statusMessageBuilder.build(eq(claimStatusChanged), any(), anyString(), anyLong()))
+                .thenThrow(NotFoundException.class);
         doNothing().when(retryableSenderService).sendToMail(any());
 
         try {
@@ -72,7 +63,8 @@ public class ConsumerTests extends AbstractKafkaConfig {
         event.setOccuredAt(LocalDateTime.now().toString());
         event.setChange(Change.status_changed(claimStatusChanged));
 
-        when(statusMessageBuilder.build(eq(claimStatusChanged), any(), anyString(), anyLong())).thenReturn(Message.builder().build());
+        when(statusMessageBuilder.build(eq(claimStatusChanged), any(), anyString(), anyLong()))
+                .thenReturn(Message.builder().build());
         doNothing().when(retryableSenderService).sendToMail(any());
 
         try {
@@ -94,17 +86,20 @@ public class ConsumerTests extends AbstractKafkaConfig {
 
     @Test
     public void errorRetryTest() {
-        int countRetries = 5;
-        AtomicInteger atomicInt = new AtomicInteger(0);
-        ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
 
         Event event = new Event();
         event.setUserInfo(getUserInfo());
         event.setOccuredAt(LocalDateTime.now().toString());
+        ClaimStatusChanged claimStatusChanged = getClaimStatusChanged();
         event.setChange(Change.status_changed(claimStatusChanged));
 
-        when(statusMessageBuilder.build(eq(claimStatusChanged), any(), anyString(), anyLong())).thenReturn(Message.builder().build());
-        // на countRetries попытке мок корректно обработает вызов, в предыдущих попытках будет вынуждать кафку ретраить обработку ивента
+        when(statusMessageBuilder.build(eq(claimStatusChanged), any(), anyString(), anyLong()))
+                .thenReturn(Message.builder().build());
+        // на countRetries попытке мок корректно обработает вызов,
+        // в предыдущих попытках будет вынуждать кафку ретраить обработку ивента
+
+        AtomicInteger atomicInt = new AtomicInteger(0);
+        int countRetries = 5;
         doAnswer(
                 invocation -> {
                     int increment = atomicInt.getAndIncrement();
@@ -125,7 +120,8 @@ public class ConsumerTests extends AbstractKafkaConfig {
 
         waitAtMost(30, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
-                    verify(statusMessageBuilder, times(countRetries)).build(eq(claimStatusChanged), any(), anyString(), anyLong());
+                    verify(statusMessageBuilder, times(countRetries))
+                            .build(eq(claimStatusChanged), any(), anyString(), anyLong());
                     // проверяем, что кафка пыталась обработать ивент такое количество раз, которое задано моку
                     verify(retryableSenderService, times(countRetries)).sendToMail(any());
                 });
@@ -141,7 +137,13 @@ public class ConsumerTests extends AbstractKafkaConfig {
     }
 
     private ClaimStatusChanged getClaimStatusChanged() {
-        return new ClaimStatusChanged(UUID.randomUUID().toString(), 1, ClaimStatus.pending(new ClaimPending()), 1, LocalDateTime.now().toString());
+        return new ClaimStatusChanged(
+                UUID.randomUUID().toString(),
+                1,
+                ClaimStatus.pending(new ClaimPending()),
+                1,
+                LocalDateTime.now().toString()
+        );
     }
 
 }

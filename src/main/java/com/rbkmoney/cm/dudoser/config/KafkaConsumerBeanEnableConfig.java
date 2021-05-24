@@ -17,7 +17,8 @@ public class KafkaConsumerBeanEnableConfig {
 
     @Bean
     @ConditionalOnProperty(value = "kafka.topics.claim-event-sink.enabled", havingValue = "true")
-    public ClaimEventSinkListener paymentEventsKafkaListener(ClaimHandlerProcessor claimHandlerProcessor, TestEventFilter testEventFilter) {
+    public ClaimEventSinkListener paymentEventsKafkaListener(ClaimHandlerProcessor claimHandlerProcessor,
+                                                             TestEventFilter testEventFilter) {
         return new ClaimEventSinkListener(claimHandlerProcessor, testEventFilter);
     }
 

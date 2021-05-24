@@ -1,7 +1,10 @@
 package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.exception.ThriftClientException;
-import com.rbkmoney.questionary.manage.*;
+import com.rbkmoney.questionary.manage.Head;
+import com.rbkmoney.questionary.manage.Questionary;
+import com.rbkmoney.questionary.manage.QuestionaryManagerSrv;
+import com.rbkmoney.questionary.manage.Reference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;

@@ -9,9 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-
 @Configuration
 public class TelegramConfig {
 
@@ -19,7 +16,7 @@ public class TelegramConfig {
 
     @Bean
     public RestTemplate telegramRestTemplate(TelegramProperties telegramProperties,
-                                             ObjectMapper objectMapper) throws NoSuchAlgorithmException, KeyManagementException {
+                                             ObjectMapper objectMapper) {
         return new RestTemplateBuilder()
                 .rootUri(BASE_URL + telegramProperties.getToken())
                 .errorHandler(new TelegramErrorHandler(objectMapper))

@@ -36,11 +36,15 @@ public class ClaimMailHandler implements ClaimHandler {
     }
 
     private void handleEvent(Event event) {
-        if (!event.getUserInfo().getType().isSetInternalUser()) return;
+        if (!event.getUserInfo().getType().isSetInternalUser()) {
+            return;
+        }
 
         Change change = event.getChange();
 
-        if (change.isSetCreated()) return;
+        if (change.isSetCreated()) {
+            return;
+        }
 
         if (change.isSetStatusChanged()) {
             ClaimStatusChanged claimStatusChanged = change.getStatusChanged();
@@ -61,16 +65,20 @@ public class ClaimMailHandler implements ClaimHandler {
             String partyId = claimUpdated.getPartyId();
             long claimId = claimUpdated.getId();
 
-            List<CommentModificationUnit> commentModifications = ClaimHelper.getCommentModifications(change.getUpdated().getChangeset());
+            List<CommentModificationUnit> commentModifications =
+                    ClaimHelper.getCommentModifications(change.getUpdated().getChangeset());
 
             for (CommentModificationUnit commentModification : commentModifications) {
-                log.info("Handle comment modification update change event get started, claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
+                log.info("Handle comment modification update change event get started, " +
+                        "claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
 
-                Message message = commentChangeMessageBuilder.build(commentModification, event.getUserInfo(), partyId, claimId);
+                Message message =
+                        commentChangeMessageBuilder.build(commentModification, event.getUserInfo(), partyId, claimId);
 
                 retryableSenderService.sendToMail(message);
 
-                log.info("Handle comment modification update change event finished, claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
+                log.info("Handle comment modification update change event finished, " +
+                        "claimId={}, partyId={}, commentId={}", claimId, partyId, commentModification.getId());
             }
         }
     }

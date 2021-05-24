@@ -14,7 +14,8 @@ public class TelegramMediaRequest extends TelegramRequest {
     @JsonProperty("parse_mode")
     private TelegramParseMode parseMode;
 
-    public TelegramMediaRequest(String chatId, Boolean disableNotification, String caption, TelegramParseMode parseMode) {
+    public TelegramMediaRequest(String chatId, Boolean disableNotification, String caption,
+                                TelegramParseMode parseMode) {
         super(chatId, disableNotification);
         this.caption = caption;
         this.parseMode = parseMode;
