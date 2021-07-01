@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.rbkmoney</groupId>
         <artifactId>service-parent-pom</artifactId>
-        <version>1.2.4</version>
+        <version>1.2.9</version>
     </parent>
 
     <artifactId>cm-dudoser</artifactId>
@@ -23,12 +23,11 @@
         <exposed.ports>${server.port} ${management.port}</exposed.ports>
         <dockerfile.base.service.tag>c0612d6052ac049496b72a23a04acb142035f249</dockerfile.base.service.tag>
         <dockerfile.registry>${env.REGISTRY}</dockerfile.registry>
-        <kafka.common.lib.version>0.1.7</kafka.common.lib.version>
         <shared.resources.version>0.3.8</shared.resources.version>
         <messages.proto.version>1.10-391d225</messages.proto.version>
         <file.storage.proto.version>1.24-a77c0c4</file.storage.proto.version>
         <questionary.proto.version>1.22-d638e44</questionary.proto.version>
-        <testcontainers.version>1.14.3</testcontainers.version>
+        <testcontainers.version>1.15.3</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -133,7 +132,6 @@
         <dependency>
             <groupId>com.rbkmoney</groupId>
             <artifactId>kafka-common-lib</artifactId>
-            <version>${kafka.common.lib.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
