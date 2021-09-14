@@ -32,7 +32,7 @@ public class MailSenderService {
             mailSender.send(mimeMessage);
             return true;
         } catch (MailException ex) {
-            Boolean existSMTPAddressFailedException = Optional.of(ex)
+            Boolean existSmtpAddressFailedException = Optional.of(ex)
                     .filter(e -> e instanceof org.springframework.mail.MailSendException)
                     .map(e -> (org.springframework.mail.MailSendException) e)
                     .stream()
@@ -42,7 +42,7 @@ public class MailSenderService {
                     .map(Throwable::getCause)
                     .map(e -> e instanceof SMTPAddressFailedException)
                     .orElse(false);
-            if (existSMTPAddressFailedException) {
+            if (existSmtpAddressFailedException) {
                 log.error("Error with SMTP when send message to mail, should be ignored, " +
                                 "partyId={}, claimId={}, email={}",
                         message.getPartyId(), message.getClaimId(), message.getTo(), ex);
