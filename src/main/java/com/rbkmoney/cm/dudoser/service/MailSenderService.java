@@ -30,6 +30,7 @@ public class MailSenderService {
             return true;
         } catch (org.springframework.mail.MailSendException ex) {
             if (ex.getCause() instanceof SMTPAddressFailedException) {
+                log.error("Exception during send message to mail", ex);
                 return true;
             }
             throw mailSendException(message, ex);
