@@ -95,8 +95,9 @@ public class MailSenderTest {
                     var map = new HashMap<Object, Exception>();
                     map.put(
                             "asd",
-                            new SendFailedException("asd", new SMTPAddressFailedException(
-                                    new InternetAddress(), "asd", 1, "asd")));
+                            new SendFailedException(
+                                    "asd",
+                                    new SMTPAddressFailedException(new InternetAddress(), "asd", 1, "asd")));
                     throw new org.springframework.mail.MailSendException(map);
                 })
                 .when(sender)
