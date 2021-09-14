@@ -32,8 +32,7 @@ public class MailSenderService {
         } catch (org.springframework.mail.MailSendException ex) {
             if (ex.getCause() instanceof SMTPAddressFailedException
                     && Objects.equals(message.getPartyId(), "545789df-60ae-4868-b570-e295b6ca6e6b")
-                    && message.getClaimId() == 24904
-                    && Objects.equals(message.getTo(), "orders@prostorshop.ru")) {
+                    && message.getClaimId() == 24904) {
                 log.error("Address wil be ignored, ", ex);
                 return true;
             }
