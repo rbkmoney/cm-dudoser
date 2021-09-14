@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -29,8 +30,11 @@ public class MailSenderService {
             mailSender.send(mimeMessage);
             return true;
         } catch (org.springframework.mail.MailSendException ex) {
-            if (ex.getCause() instanceof SMTPAddressFailedException) {
-                log.error("Exception during send message to mail", ex);
+            if (ex.getCause() instanceof SMTPAddressFailedException
+                    && Objects.equals(message.getPartyId(), "545789df-60ae-4868-b570-e295b6ca6e6b")
+                    && message.getClaimId() == 24904
+                    && Objects.equals(message.getTo(), "orders@prostorshop.ru")) {
+                log.error("Address wil be ignored, ", ex);
                 return true;
             }
             throw mailSendException(message, ex);
