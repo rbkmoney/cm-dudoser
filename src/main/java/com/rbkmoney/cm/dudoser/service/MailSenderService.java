@@ -11,8 +11,11 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,15 +31,25 @@ public class MailSenderService {
             MimeMessage mimeMessage = getMimeMessage(message);
             mailSender.send(mimeMessage);
             return true;
-        } catch (org.springframework.mail.MailSendException ex) {
-            if (ex.getCause() instanceof SMTPAddressFailedException) {
+        } catch (MailException ex) {
+            Boolean existSmtpAddressFailedException = Optional.of(ex)
+                    .filter(e -> e instanceof org.springframework.mail.MailSendException)
+                    .map(e -> (org.springframework.mail.MailSendException) e)
+                    .stream()
+                    .flatMap(e -> Arrays.stream(e.getMessageExceptions()))
+                    .filter(e -> e instanceof SendFailedException)
+                    .findAny()
+                    .map(Throwable::getCause)
+                    .map(e -> e instanceof SMTPAddressFailedException)
+                    .orElse(false);
+            if (existSmtpAddressFailedException) {
                 log.error("Error with SMTP when send message to mail, should be ignored, " +
                                 "partyId={}, claimId={}, email={}",
                         message.getPartyId(), message.getClaimId(), message.getTo(), ex);
                 return true;
             }
             throw mailSendException(message, ex);
-        } catch (MessagingException | MailException ex) {
+        } catch (MessagingException ex) {
             throw mailSendException(message, ex);
         }
     }

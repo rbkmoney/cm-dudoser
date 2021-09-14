@@ -5,22 +5,29 @@ import com.icegreen.greenmail.util.ServerSetup;
 import com.rbkmoney.cm.dudoser.CMDudoserApplication;
 import com.rbkmoney.cm.dudoser.domain.Message;
 import com.rbkmoney.cm.dudoser.exception.MailSendException;
+import com.sun.mail.smtp.SMTPAddressFailedException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.BodyPart;
+import javax.mail.SendFailedException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @RunWith(SpringRunner.class)
@@ -39,6 +46,8 @@ public class MailSenderTest {
 
     @Autowired
     private MailSenderService mailSenderService;
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Test
     public void sendingMessageFlowTest() throws Exception {
@@ -74,6 +83,28 @@ public class MailSenderTest {
 
         MailSenderService senderService = new MailSenderService(sender);
         senderService.send(message);
+    }
+
+    @Test
+    public void shouldHandleSmtpAddressFailedException() {
+        JavaMailSenderImpl sender = Mockito.mock(JavaMailSenderImpl.class);
+        Mockito.when(sender.createMimeMessage())
+                .thenReturn(mailSender.createMimeMessage());
+        Mockito.doAnswer(
+                invocation -> {
+                    var map = new HashMap<Object, Exception>();
+                    map.put(
+                            "asd",
+                            new SendFailedException(
+                                    "asd",
+                                    new SMTPAddressFailedException(new InternetAddress(), "asd", 1, "asd")));
+                    throw new org.springframework.mail.MailSendException(map);
+                })
+                .when(sender)
+                .send(any(MimeMessage.class));
+        Message message = createMessage();
+        MailSenderService senderService = new MailSenderService(sender);
+        assertTrue(senderService.send(message));
     }
 
     private String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws Exception {
