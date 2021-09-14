@@ -2,6 +2,7 @@ package com.rbkmoney.cm.dudoser.service;
 
 import com.rbkmoney.cm.dudoser.domain.Message;
 import com.rbkmoney.cm.dudoser.exception.MailSendException;
+import com.sun.mail.smtp.SMTPAddressFailedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -28,10 +28,16 @@ public class MailSenderService {
             MimeMessage mimeMessage = getMimeMessage(message);
             mailSender.send(mimeMessage);
             return true;
+        } catch (org.springframework.mail.MailSendException ex) {
+            if (ex.getCause() instanceof SMTPAddressFailedException) {
+                log.error("Error with SMTP when send message to mail, should be ignored, " +
+                                "partyId={}, claimId={}, email={}",
+                        message.getPartyId(), message.getClaimId(), message.getTo(), ex);
+                return true;
+            }
+            throw mailSendException(message, ex);
         } catch (MessagingException | MailException ex) {
-            throw new MailSendException(
-                    String.format("Received exception while sending message to mail, partyId=%s, claimId=%s, email=%s",
-                            message.getPartyId(), message.getClaimId(), message.getTo()), ex);
+            throw mailSendException(message, ex);
         }
     }
 
@@ -43,5 +49,11 @@ public class MailSenderService {
         helper.setSubject(message.getSubject());
         helper.setText(message.getContent(), true);
         return mimeMessage;
+    }
+
+    private MailSendException mailSendException(Message message, Exception ex) {
+        return new MailSendException(
+                String.format("Received exception while sending message to mail, partyId=%s, claimId=%s, email=%s",
+                        message.getPartyId(), message.getClaimId(), message.getTo()), ex);
     }
 }
