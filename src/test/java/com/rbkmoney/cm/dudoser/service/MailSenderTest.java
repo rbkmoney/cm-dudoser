@@ -104,7 +104,7 @@ public class MailSenderTest {
                 .send(any(MimeMessage.class));
         Message message = createMessage();
         MailSenderService senderService = new MailSenderService(sender);
-        senderService.send(message);
+        assertTrue(senderService.send(message));
     }
 
     private String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws Exception {
